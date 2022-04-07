@@ -130,8 +130,7 @@ Our team is chosen from a pool of RFL players exclusively to prevent language, c
 
 Although player salary is the assumed player rating metric, exploratory analysis shows that salaries in RFL deviate noticeably compared to other leagues despite RFL players delivering similar performances. Thus, the use of a model linking player attributes to a standardised salary figure is necessary. 
 
-**TODO: ADD CODE**
-![](Markdown_Figures/Annualized_Salary_Boxplot.png)
+
 
 To develop a predictive model linking player attributes to salaries, the evaluation criteria of validation-set error is used. The non-RFL league player data is split into a 90% training set and 10% test set. Several candidate models are then fitted, and their corresponding validation-set error computed. Note that:
 

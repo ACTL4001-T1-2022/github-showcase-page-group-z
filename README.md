@@ -8,13 +8,62 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 4.  Economic Impact Steps
 5.  Conclusion
 
-Modelling Steps
-===============
+For Data Collection, we have conducted the following steps: 1. Excel
+files are converted to R via `convert_excel_to_r.R`. The file mainly
+uses `readxl` package to read excel tables of specified ranges. 2.
+Cleaning and preparation pipelines are built in `R_files/merge_data.R`.
+This file treats merges data sets from different excel sheets together,
+manages data inconsistencies, imputes missing or negative values, and
+remove unnecessary columns. 3. Exploratory Data Analysis are conducted
+in `R_files/exploratory.R` as well as a preliminary linear regression.
+Some plots from exploratory analysis are generated below.
+
+``` r
+ggplot(PLAYER_league_non_goal_salary, aes(x = League, 
+                                          y = Annualized_Salary))+
+    geom_boxplot()+
+    theme_bw()+
+    labs(x = "League", y = "Annualised Salary (∂)", title = "Box Plot of Annualized Salary per League")+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
+    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+```
+
+![](README_files/figure-markdown_github/Annualized_Salary_League-1.png)
+
+``` r
+#KPI analysis
+fw.kpi <- c('Standard_Sh','Standard_SoT','Standard_G/Sh','Expected_xG')
+mf.kpi <- c('CrsPA','KP','Total_Cmp','PPA','1/3')
+df.kpi <- c('Int','Clr','Tackles_TklW')
+gk.kpi <- c('Performance_GA90')
+
+#Histogram plots
+
+make.histogram <- function(kpis, position, data, path = F) {
+    
+    for (kpi in kpis) {
+        position.df <- PLAYER_league_non_goal_salary %>%
+            filter(Pos_new == position)%>%
+            filter(!(abs(!!as.name(kpi) - median(!!as.name(kpi))) > 2*sd(!!as.name(kpi))))
+        p<- ggplot(position.df, aes(x = !!as.name(kpi))) +
+            geom_histogram(stat = "count")+
+            labs(title = paste(position, "histogram"))
+        print(p)
+        
+    }
+}
+
+# make.histogram(fw.kpi, 'FW',PLAYER_league_non_goal_salary)
+# make.histogram(df.kpi, 'DF',PLAYER_league_non_goal_salary)
+# make.histogram(mf.kpi, 'MF',PLAYER_league_non_goal_salary)
+# make.histogram(gk.kpi, 'GK',PLAYER_league_goal_salary)
+```
+
+# Modelling Steps
 
 ![](Markdown_Figures/Model_Flowchart.png)
 
-Player Rating Model
--------------------
+## Player Rating Model
 
 Our team is chosen from a pool of RFL players exclusively to prevent
 language, cultural and political barriers from impeding overall team
@@ -34,8 +83,6 @@ analysis shows that salaries in RFL deviate noticeably compared to other
 leagues despite RFL players delivering similar performances. Thus, the
 use of a model linking player attributes to a standardised salary figure
 is necessary.
-
-**TODO: ADD CODE** ![](Markdown_Figures/Annualized_Salary_Boxplot.png)
 
 To develop a predictive model linking player attributes to salaries, the
 evaluation criteria of validation-set error is used. The non-RFL league
@@ -66,8 +113,7 @@ models utilise the following parameters:
     small number of trees will be inflexible, the number of trees that
     corresponds to the lowest cross-validation error is selected.
 
-FW Player Rating Model
-----------------------
+## FW Player Rating Model
 
 ``` r
 #FW Player Rating Model - Fitting using 10-fold CV error
@@ -90,8 +136,7 @@ FW_cv <- gbm.perf(gbmFit.param_FW, method = "cv")
 
 ![](README_files/figure-markdown_github/FW_Player_Rating-1.png)
 
-MF Player Rating Model
-----------------------
+## MF Player Rating Model
 
 ``` r
 #MF Player Rating Model - Fitting using 10-fold CV error
@@ -112,73 +157,9 @@ gbmFit.param_MF
 MF_cv <- gbm.perf(gbmFit.param_MF, method = "cv")
 ```
 
-![](README_files/figure-markdown_github/linear_regression_models-3.png)
-
-# Modelling Steps
-
-![](Markdown_Figures/Model_Flowchart.png)
-
-``` r
-MF_RFL %>% arrange(Diff,descending = T)
-DF_RFL %>% arrange(Diff,descending = T)
-FW_RFL %>% arrange(Diff,descending = T)
-
-
-## DO NOT CHANGE COLUMN ORDER -> CHANGING COLUMN ORDER WILL REQUIRE THE FOLLOWING CODE TO BE MODIFIED ##
-
-#Fit boosting model on annualised salary dataset with non RFL football leagues and ALL predictors
-set.seed(1)
-colnames(df)[c(1,2,3,4,5,71)]
-
-gbmFit.param <- gbm(Annualized_Salary ~., data = df[df['League'] != "RFL",-c(1,2,3,4,5,71)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
-gbmFit.param
-
-min <- which.min(gbmFit.param$cv.error)
-min
-gbm.perf(gbmFit.param, method = "cv")
-
-gbmFit <- gbm(Annualized_Salary ~., df[df['League'] != "RFL",-c(1,2,3,4,5,71)], distribution = "gaussian", n.trees = min, interaction.depth = 1, shrinkage = 0.01)
-
-summary(gbmFit)
-
-gbm.predict = predict(gbmFit, newdata = df[,-c(1,2,3,4,5,70,71)], n.trees = min, type = "response")
-
-
-plot(gbm.predict[(df['League'] != "RFL")], df$Annualized_Salary[(df['League'] != "RFL")])
-plot(gbm.predict[(df['League'] == "RFL")], df$Annualized_Salary[(df['League'] == "RFL")])
-
-plot(gbm.predict[(df['Nation'] != "Rarita")], df$Annualized_Salary[(df['Nation'] != "Rarita")])
-plot(gbm.predict[(df['Nation'] == "Rarita")], df$Annualized_Salary[(df['Nation'] == "Rarita")])
-
-#New dataframe with correlated vairables removed + identifiable attributes
-cor_df_merge <- cbind(cor_df,df[,c("Player","Nation","Pos_new","League","Squad")])
-stopifnot((nrow(cor_df_merge) == 5500) && (length(colnames(cor_df_merge))== 23)) # Added check 
-#MF model
-gbmFit.param_MF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
-gbmFit.param_MF
-
-min_MF <- which.min(gbmFit.param_MF$cv.error)
-min_MF
-gbm.perf(gbmFit.param_MF, method = "cv")
-
-gbmFit_MF <- gbm(Annualized_Salary ~., cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF"),-c(19,20,21,22,23)], distribution = "gaussian", n.trees = min_MF, interaction.depth = 1, shrinkage = 0.01)
-
-summary(gbmFit_MF)
-gbm.predict_MF = predict(gbmFit_MF, newdata = cor_df_merge[,-c(17, 19,20,21,22,23)], n.trees = min_MF, type = "response")
-
-#Comparing actual vs expected in MF model
-hist(gbm.predict_MF[(cor_df_merge['Pos_new'] == "MF") & (df['League'] != "RFL")])
-hist(df$Annualized_Salary[(df['League'] != "RFL") & (df['Pos_new'] == "MF")], breaks = 20)
-
-plot(gbm.predict_MF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")], df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")])
-plot(gbm.predict_MF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF")], df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF")])
-
-colnames(cor_df_merge)[c(17,19,20,21,22,23)]
-```
 ![](README_files/figure-markdown_github/MF_Player_Rating-1.png)
 
-DF Player Rating Model
-----------------------
+## DF Player Rating Model
 
 ``` r
 #DF Player Rating Model - Fitting using 10-fold CV error
@@ -201,8 +182,7 @@ DF_cv <- gbm.perf(gbmFit.param_DF, method = "cv")
 
 ![](README_files/figure-markdown_github/DF_Player_Rating-1.png)
 
-GK Player Rating Model
-----------------------
+## GK Player Rating Model
 
 ``` r
 #GK model
