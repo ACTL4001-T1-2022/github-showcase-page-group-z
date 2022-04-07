@@ -1,4 +1,5 @@
-# Actuarial Theory and Practice A Assignment
+Actuarial Theory and Practice A Assignment
+==========================================
 
 By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 
