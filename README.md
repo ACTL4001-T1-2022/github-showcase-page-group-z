@@ -275,9 +275,10 @@ FSA Match Simulation
 --------------------
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5
-years and winning the FSA in 10 years, we ran 1000 simulations of each
-objective using the code block below and then ran that 1000 times to
-generate a distribution of probabilities.
+years and winning the FSA Championships in 10 years, we ran 1000
+simulations of tournament bracket outcomes to obtain a single
+probability using the code block below. We then repeated this process
+1000 times to generate a distribution of probabilities.
 
 ``` r
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -315,7 +316,8 @@ comfortably exceeds the performance constraints. Here, the 95%
 confidence interval for the probabilities of attaining an FSA
 championship top-10 in 5 years and winning the FSA championship in 10
 years is (91.540%, 91.647%) and (76.332%, 76.500%) respectively. These
-are well above the corresponding 85% and 70% thresholds established.
+are well above the corresponding 85% and 70% thresholds established
+earlier.
 
 ``` r
 par(mfrow = c(1,2))
@@ -337,3 +339,31 @@ ggplot(prob_win_10yrs.df)+
 ```
 
 ![](README_files/figure-markdown_github/competitiveness_of_team_plots-2.png)
+
+Limitations of Team Selection
+-----------------------------
+
+Several limitations were inherent to the modelling process: \* It is
+assumed that all teams in FSA maintain the same team composition over
+ten years and that players remain at their skill level (ignoring
+skill-growth and aging). This is unlikely to be valid in practice. \*
+Alternative models such as neural networks and AdaBoost were not
+considered and may have exhibited higher predictive power. \* Models are
+fitted using a validation-set approach, removing the incorporation of
+potentially valuable information. The resulting model is dependent on
+which observations are included in the training and validation sets.
+
+Economic Impact
+===============
+
+Implementation Plan
+===================
+
+Ethics
+======
+
+Risk and Risk Mitigation Considerations
+=======================================
+
+Conclusion
+==========
