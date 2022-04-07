@@ -67,101 +67,122 @@ models utilise the following parameters:
     small number of trees will be inflexible, the number of trees that
     corresponds to the lowest cross-validation error is selected.
 
-FW Player Rating Model
-----------------------
-
 ``` r
-#FW Player Rating Model - Fitting using 10-fold CV error
+#FW Player Rating Model
 gbmFit.param_FW <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
-gbmFit.param_FW
-```
-
-    ## gbm(formula = Annualized_Salary ~ ., distribution = "gaussian", 
-    ##     data = cor_df_merge[(cor_df_merge["League"] != "RFL") & (cor_df_merge["Pos_new"] == 
-    ##         "FW"), -c(19, 20, 21, 22, 23)], n.trees = 3000, interaction.depth = 1, 
-    ##     shrinkage = 0.01, cv.folds = 10)
-    ## A gradient boosted model with gaussian loss function.
-    ## 3000 iterations were performed.
-    ## The best cross-validation iteration was 1296.
-    ## There were 17 predictors of which 17 had non-zero influence.
-
-``` r
-FW_cv <- gbm.perf(gbmFit.param_FW, method = "cv")
-```
-
-![](README_files/figure-markdown_github/FW_Player_Rating-1.png)
-
-MF Player Rating Model
-----------------------
-
-``` r
-#MF Player Rating Model - Fitting using 10-fold CV error
+#MF Player Rating Model
 gbmFit.param_MF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
-gbmFit.param_MF
-```
-
-    ## gbm(formula = Annualized_Salary ~ ., distribution = "gaussian", 
-    ##     data = cor_df_merge[(cor_df_merge["League"] != "RFL") & (cor_df_merge["Pos_new"] == 
-    ##         "MF"), -c(19, 20, 21, 22, 23)], n.trees = 3000, interaction.depth = 1, 
-    ##     shrinkage = 0.01, cv.folds = 10)
-    ## A gradient boosted model with gaussian loss function.
-    ## 3000 iterations were performed.
-    ## The best cross-validation iteration was 1479.
-    ## There were 17 predictors of which 17 had non-zero influence.
-
-``` r
-MF_cv <- gbm.perf(gbmFit.param_MF, method = "cv")
-```
-
-![](README_files/figure-markdown_github/MF_Player_Rating-1.png)
-
-DF Player Rating Model
-----------------------
-
-``` r
-#DF Player Rating Model - Fitting using 10-fold CV error
+#DF Player Rating Model
 gbmFit.param_DF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
-gbmFit.param_DF
-```
-
-    ## gbm(formula = Annualized_Salary ~ ., distribution = "gaussian", 
-    ##     data = cor_df_merge[(cor_df_merge["League"] != "RFL") & (cor_df_merge["Pos_new"] == 
-    ##         "DF"), -c(19, 20, 21, 22, 23)], n.trees = 3000, interaction.depth = 1, 
-    ##     shrinkage = 0.01, cv.folds = 10)
-    ## A gradient boosted model with gaussian loss function.
-    ## 3000 iterations were performed.
-    ## The best cross-validation iteration was 1708.
-    ## There were 17 predictors of which 17 had non-zero influence.
-
-``` r
-DF_cv <- gbm.perf(gbmFit.param_DF, method = "cv")
-```
-
-![](README_files/figure-markdown_github/DF_Player_Rating-1.png)
-
-GK Player Rating Model
-----------------------
-
-``` r
-#GK model
+#GK Player Rating Model
 gbmFit.param_GK <- gbm(Annualized_Salary ~., data = gk_df[(gk_df['League'] != "RFL"),-c(16,17,18,19,20)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
-gbmFit.param_GK
 ```
 
-    ## gbm(formula = Annualized_Salary ~ ., distribution = "gaussian", 
-    ##     data = gk_df[(gk_df["League"] != "RFL"), -c(16, 17, 18, 19, 
-    ##         20)], n.trees = 3000, interaction.depth = 1, shrinkage = 0.01, 
-    ##     cv.folds = 10)
-    ## A gradient boosted model with gaussian loss function.
-    ## 3000 iterations were performed.
-    ## The best cross-validation iteration was 484.
-    ## There were 14 predictors of which 14 had non-zero influence.
+To optimise the number of trees in the GBMs, CV error as a function of
+number of trees is plotted below. Note that the green and black lines
+represent test error and training error respectively.
+
+**TODO: Add title to graphs**
 
 ``` r
+par(mfrow = c(2,2))
+FW_cv <- gbm.perf(gbmFit.param_FW, method = "cv")
+MF_cv <- gbm.perf(gbmFit.param_MF, method = "cv")
+DF_cv <- gbm.perf(gbmFit.param_DF, method = "cv")
 GK_cv <- gbm.perf(gbmFit.param_GK, method = "cv")
 ```
 
-![](README_files/figure-markdown_github/GK_Player_Rating-1.png)
+![](README_files/figure-markdown_github/CV_plots-1.png)
+
+Player Selection
+----------------
+
+Our goal is to enlist the most cost-efficient RFL players for player
+selection that maximise economic impact. These players exhibit the
+highest standardised-to-annualised salary ratios, delivering high
+performance at low cost. However, player selection is restricted to the
+top 25% highest-paid players to meet our FSA performance objectives.
+Without this additional restriction, sufficient competitiveness is not
+achieved.
+
+``` r
+#FW
+FW_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]))
+FW_select <- FW_plot_data[(gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")] > 4.41),]
+
+ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+    geom_point()+
+    theme_bw()+
+    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
+    geom_encircle(data = FW_select, color = "red", size = 2, expand = 0.03)+
+    labs(x = paste0("Annualised Salary (",expression(partialdiff)), y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
+    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
+    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+```
+
+![](README_files/figure-markdown_github/Standardised_Graphs-1.png)
+
+``` r
+#MF
+MF_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_MF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]))
+MF_select <- MF_plot_data[
+    (gbm.predict_MF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]>4.4),]
+
+ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+    geom_point()+
+    theme_bw()+
+    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
+    geom_encircle(data = MF_select, color = "red", size = 2, expand = 0.03)+
+    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL MF Players")+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
+    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
+    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+```
+
+![](README_files/figure-markdown_github/Standardised_Graphs-2.png)
+
+``` r
+#DF
+DF_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_DF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")]))
+DF_select <- DF_plot_data[(gbm.predict_DF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")] > 4.35),]
+
+ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+    geom_point()+
+    theme_bw()+
+    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
+    geom_encircle(data = DF_select, color = "red", size = 2, expand = 0.03)+
+    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL DF Players")+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
+    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
+    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+```
+
+![](README_files/figure-markdown_github/Standardised_Graphs-3.png)
+
+``` r
+#GK
+GK_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_GK[(df['League'] == "RFL")], Annualised_Salary = gk_df$Annualized_Salary[(df['League'] == "RFL")]))
+GK_select <- GK_plot_data[(gbm.predict_GK[(df['League'] == "RFL")]/gk_df$Annualized_Salary[(df['League'] == "RFL")] > 1),]
+
+ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+    geom_point()+
+    theme_bw()+
+    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
+    geom_encircle(data = GK_select, color = "red", size = 2, expand = 0.03)+
+    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL GK Players")+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
+    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
+    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+```
+
+    ## Warning: Removed 395 rows containing non-finite values (stat_smooth).
+
+    ## Warning: Removed 395 rows containing missing values (geom_point).
+
+    ## Warning: Removed 395 rows containing missing values (geom_encircle).
+
+![](README_files/figure-markdown_github/Standardised_Graphs-4.png)
 
 ``` r
 model_data <- read.csv("data/match_model.csv")
