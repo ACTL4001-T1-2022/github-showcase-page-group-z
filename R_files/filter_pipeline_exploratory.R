@@ -52,10 +52,4 @@ stopifnot(dim(gk_tourn_df)== c(129,18))
 
 
 
-rm(list= ls()[! (ls() %in% c('df',
-                             'nonRFL',
-                             'RFL',
-                             'cor_df',
-                             'gk_df',
-                             'gk_tourn_df',
-                             'cor_tourn_merge'))])
+
