@@ -1,0 +1,40 @@
+library(readxl)
+library(here)
+
+here::set_here()
+ECON_GDP_per_cap <- read_excel("data/economic.xlsx",sheet = "Rarita Economic",range= "B12:F22")
+ECON_GNI_per_cap <- read_excel("data/economic.xlsx",sheet = "Rarita Economic",range= "H12:L22")
+ECON_pop <- read_excel("data/economic.xlsx",sheet = "Rarita Economic",range= "B26:F36")
+ECON_pop_den <- read_excel("data/economic.xlsx",sheet = "Rarita Economic",range= "H26:L36")
+ECON_healthcare_per_cap <- read_excel("data/economic.xlsx",sheet = "Rarita Economic",range= "B40:F50")
+ECON_household_savings <- read_excel("data/economic.xlsx",sheet = "Rarita Economic",range= "H40:L50")
+ECON_euro_to_doubloon <- read_excel("data/economic.xlsx",sheet = "Rarita Economic",range= "B54:D59")
+ECON_spot_rate <- read_excel("data/economic.xlsx",sheet = "Rarita Spot Rates",range= "B12:P72")
+ECON_annual_inflation_rate <- read_excel("data/economic.xlsx",sheet = "Rarita Inflation Rates",range= "B11:C41")
+ECON_GDP_per_cap_OTHER<- read_excel("data/economic.xlsx",sheet = "Other Countries GDP",range= "B12:G32")
+
+FINS_revenue <- read_excel("data/football-finance.xlsx",sheet = "Revenue",range= "B13:V34")
+FINS_expense <- read_excel("data/football-finance.xlsx",sheet = "Expense",range= "B13:Q34")
+FINS_attendance <- read_excel("data/football-finance.xlsx",sheet = "Attendance",range= "B13:C34")
+FINS_social_media <- read_excel("data/football-finance.xlsx",sheet = "Social Media",range= "B13:G34")
+
+colnames(FINS_revenue) <- paste(colnames(FINS_revenue),c("",rep(2020:2016, each = 4, len = 20)))
+colnames(FINS_expense) <- paste(colnames(FINS_expense),c("",rep(2020:2016, each = 4, len = 20)))
+
+PLAYER_league_shoot <- read_excel("data/player-modified.xlsx",sheet = "League Shooting",range= "B12:AA5566")
+PLAYER_league_pass <- read_excel("data/player-modified.xlsx",sheet = "League Passing",range= "B12:AF5566")
+PLAYER_league_def <- read_excel("data/player-modified.xlsx",sheet = "League Defense",range= "B12:AG5566")
+PLAYER_league_goal <- read_excel("data/player-modified.xlsx",sheet = "League Goalkeeping",range= "B12:AB425")
+
+PLAYER_tourn_res_2020 <- read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "B11:C27")
+PLAYER_tourn_res_2021 <- read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "E11:F35")
+PLAYER_tourn_shoot_2021 <- read_excel("data/player-modified.xlsx",sheet = "Tournament Shooting 2021",range= "B12:Z500")
+PLAYER_tourn_shoot_2020 <- read_excel("data/player-modified.xlsx",sheet = "Tournament Shooting 2020",range= "B12:T1539")
+PLAYER_tourn_pass <- read_excel("data/player-modified.xlsx",sheet = "Tournament Passing",range= "B12:AE500")
+PLAYER_tourn_def <- read_excel("data/player-modified.xlsx",sheet = "Tournament Defense",range= "B12:AF500")
+PLAYER_tourn_goal <- read_excel("data/player-modified.xlsx",sheet = "Tournament Goalkeeping",range= "B12:AA141")
+
+PLAYER_salary2020 <- read_excel("data/player-modified.xlsx",sheet = "2020 Salaries",range= "B12:G2744")
+PLAYER_salary2021 <- read_excel("data/player-modified.xlsx",sheet = "2021 Salaries",range= "B12:G2834")
+
+# save.image(file="data/all_raw_data.RData") 
