@@ -71,6 +71,12 @@ plot(DF_RFL$Annualized_Salary,DF_RFL$Predicted_Sal, main= "DF RFL")
 plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 ```
 
+
+# Modelling Steps
+
+![](Markdown_Figures/Model_Flowchart.png)
+
+
 ```{r gbms, eval = FALSE}
 
 MF_RFL %>% arrange(Diff,descending = T)
