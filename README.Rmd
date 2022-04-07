@@ -8,13 +8,14 @@ output:
 ---
 
 # Actuarial Theory and Practice A Assignment
+
 By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 
-1. Background
-1. Data Cleaning Steps
-2. Modelling Steps
-3. Economic Impact Steps
-4. Conclusion
+1.  Background
+2.  Data Cleaning Steps
+3.  Modelling Steps
+4.  Economic Impact Steps
+5.  Conclusion
 
 ```{r library, include = FALSE}
 library(dplyr)
@@ -24,8 +25,10 @@ library(pdp)
 library(ggalt)
 ```
 
-
-
+For Data Collection, we have conducted the following steps:
+1. Excel files are converted to R via `convert_excel_to_r.R`. The file mainly uses `readxl` package to read excel tables of specified ranges.
+2. Cleaning and preparation pipelines are built in `R_files/merge_data.R`. This file treats merges data sets from different excel sheets together, manages data inconsistencies, imputes missing or negative values, and remove unnecessary columns.
+3. Exploratory Data Analysis are conducted in `R_files/exploratory.R` as well as a preliminary linear regression. Some plots from exploratory analysis are generated below.
 
 ```{r setup, include = FALSE}
 source("R_files/Annie's preprocessing.R")
@@ -33,6 +36,46 @@ source("R_files/filter_pipeline_exploratory.R")
 PLAYER_tourn_res_2020 <- readxl::read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "B11:C27")
 PLAYER_tourn_res_2021 <- readxl::read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "E11:F35")
 ```
+
+```{r Annualized_Salary_League}
+ggplot(PLAYER_league_non_goal_salary, aes(x = League, 
+                                          y = Annualized_Salary))+
+    geom_boxplot()+
+    theme_bw()+
+    labs(x = "League", y = "Annualised Salary (∂)", title = "Box Plot of Annualized Salary per League")+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
+    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+```
+
+```{r}
+#KPI analysis
+fw.kpi <- c('Standard_Sh','Standard_SoT','Standard_G/Sh','Expected_xG')
+mf.kpi <- c('CrsPA','KP','Total_Cmp','PPA','1/3')
+df.kpi <- c('Int','Clr','Tackles_TklW')
+gk.kpi <- c('Performance_GA90')
+
+#Histogram plots
+
+make.histogram <- function(kpis, position, data, path = F) {
+    
+    for (kpi in kpis) {
+        position.df <- PLAYER_league_non_goal_salary %>%
+            filter(Pos_new == position)%>%
+            filter(!(abs(!!as.name(kpi) - median(!!as.name(kpi))) > 2*sd(!!as.name(kpi))))
+        p<- ggplot(position.df, aes(x = !!as.name(kpi))) +
+            geom_histogram(stat = "count")+
+            labs(title = paste(position, "histogram"))
+        print(p)
+        
+    }
+}
+
+# make.histogram(fw.kpi, 'FW',PLAYER_league_non_goal_salary)
+# make.histogram(df.kpi, 'DF',PLAYER_league_non_goal_salary)
+# make.histogram(mf.kpi, 'MF',PLAYER_league_non_goal_salary)
+# make.histogram(gk.kpi, 'GK',PLAYER_league_goal_salary)
+```
+
 
 ```{r linear_regression_models, warning=FALSE}
 # LINEAR REGRESSION
@@ -655,6 +698,5 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-
 
 ```

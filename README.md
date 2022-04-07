@@ -1,5 +1,4 @@
-Actuarial Theory and Practice A Assignment
-==========================================
+# Actuarial Theory and Practice A Assignment
 
 By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 
@@ -8,6 +7,11 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 3.  Modelling Steps
 4.  Economic Impact Steps
 5.  Conclusion
+
+For Data Collection, first, excel files are converted to R via
+`conver_excel_to_r.R`. The file mainly uses `readxl` package to read
+excel tables of a specified range pipelines were built in
+`R_files/merge_data.R`
 
 ``` r
 # LINEAR REGRESSION
@@ -70,6 +74,10 @@ plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 ```
 
 ![](README_files/figure-markdown_github/linear_regression_models-3.png)
+
+# Modelling Steps
+
+![](Markdown_Figures/Model_Flowchart.png)
 
 ``` r
 MF_RFL %>% arrange(Diff,descending = T)
