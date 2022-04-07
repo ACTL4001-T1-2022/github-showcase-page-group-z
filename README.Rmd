@@ -77,7 +77,7 @@ make.histogram <- function(kpis, position, data, path = F) {
 ```
 
 
-```{r linear_regression_models, warning=FALSE}
+```{r linear_regression_models, include = FALSE}
 # LINEAR REGRESSION
 
 cols_to_remove <- c("Pos_new","Player","Nation","League","Squad")
@@ -119,8 +119,35 @@ plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 
 ![](Markdown_Figures/Model_Flowchart.png)
 
+## Player Rating Model
 
-```{r gbms, eval = FALSE}
+Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion (Malesky, Saiegh 2014). This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
+
+* Salaries of league players are reflective of their skill level.
+* The attributes relevant in determining skill level are position-specific. Thus, player ratings for each position should be modelled individually. 
+* Player performance in leagues translates to tournaments.
+* The level of play is consistent across leagues.
+
+Although player salary is the assumed player rating metric, exploratory analysis shows that salaries in RFL deviate noticeably compared to other leagues despite RFL players delivering similar performances. Thus, the use of a model linking player attributes to a standardised salary figure is necessary. 
+
+**TODO: ADD CODE**
+![](Markdown_Figures/Annualized_Salary_Boxplot.png)
+
+To develop a predictive model linking player attributes to salaries, the evaluation criteria of validation-set error is used. The non-RFL league player data is split into a 90% training set and 10% test set. Several candidate models are then fitted, and their corresponding validation-set error computed. Note that:
+
+* Model fitting occurred independently for each position (FW, DF, MF, GK).
+* Goalkeepers are modelled only using goalkeeping data. Here, it is assumed that goalkeepers do not require the same level of attacking, passing etc. as other positions, and that goalkeeping specific skills are their most important attributes.
+
+![](Markdown_Figures/Test_MSE.png)
+
+The selected player-rating model is a gradient boosting model (GBM) trained on the non-RFL player league due to its higher predictive performance (at the cost of less interpretability). The four boosting models utilise the following parameters:
+
+* An interaction depth of 1 resulting in each tree becoming a stump. This leads to a more interpretable additive model.
+* A shrinkage parameter of 0.01 which is sufficiently low for predictive needs.
+* The number of trees is calculated using 10-fold cross-validation error. As a large number of trees will lead to overfitting and a small number of trees will be inflexible, the number of trees that corresponds to the lowest cross-validation error is selected.
+
+
+```{r gbm_main, include = FALSE, eval = FALSE}
 
 MF_RFL %>% arrange(Diff,descending = T)
 DF_RFL %>% arrange(Diff,descending = T)
@@ -153,13 +180,54 @@ plot(gbm.predict[(df['League'] == "RFL")], df$Annualized_Salary[(df['League'] ==
 plot(gbm.predict[(df['Nation'] != "Rarita")], df$Annualized_Salary[(df['Nation'] != "Rarita")])
 plot(gbm.predict[(df['Nation'] == "Rarita")], df$Annualized_Salary[(df['Nation'] == "Rarita")])
 
+```
+
+```{r cor_df, include = FALSE}
+
 #New dataframe with correlated vairables removed + identifiable attributes
 cor_df_merge <- cbind(cor_df,df[,c("Player","Nation","Pos_new","League","Squad")])
 stopifnot((nrow(cor_df_merge) == 5500) && (length(colnames(cor_df_merge))== 23)) # Added check 
-#MF model
+set.seed(1)
+
+```
+
+## FW Player Rating Model
+```{r FW_Player_Rating, include = TRUE}
+#FW Player Rating Model - Fitting using 10-fold CV error
+gbmFit.param_FW <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
+gbmFit.param_FW
+FW_cv <- gbm.perf(gbmFit.param_FW, method = "cv")
+```
+
+```{r FW_Player_Rating_Min, include = FALSE}
+min_FW <- which.min(gbmFit.param_FW$cv.error)
+min_FW
+
+gbmFit_FW <- gbm(Annualized_Salary ~., cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW"),-c(19,20,21,22,23)], distribution = "gaussian", n.trees = min_FW, interaction.depth = 1, shrinkage = 0.01)
+
+summary(gbmFit_FW)
+
+gbm.predict_FW = predict(gbmFit_FW, newdata = cor_df_merge[,-c(17,19,20,21,22,23)], n.trees = min_FW, type = "response")
+
+#Comparing actual vs expected in FW model
+hist(gbm.predict_FW[(cor_df_merge['Pos_new'] == "FW") & (df['League'] != "RFL")])
+hist(df$Annualized_Salary[(df['League'] != "RFL") & (df['Pos_new'] == "FW")], breaks = 20)
+
+plot(gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")], df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")])
+plot(gbm.predict_FW[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")], df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")])
+
+mean((gbm.predict_FW[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")]-df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")])^2)
+```
+
+## MF Player Rating Model
+```{r MF_Player_Rating, include = TRUE}
+#MF Player Rating Model - Fitting using 10-fold CV error
 gbmFit.param_MF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 gbmFit.param_MF
+MF_cv <- gbm.perf(gbmFit.param_MF, method = "cv")
+```
 
+```{r MF_Player_Rating_Min, include = FALSE}
 min_MF <- which.min(gbmFit.param_MF$cv.error)
 min_MF
 gbm.perf(gbmFit.param_MF, method = "cv")
@@ -179,11 +247,17 @@ plot(gbm.predict_MF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF")]
 colnames(cor_df_merge)[c(17,19,20,21,22,23)]
 
 mean((gbm.predict_MF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF")]-df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF")])^2)
+```
 
-#DF model
+## DF Player Rating Model
+```{r DF_Player_Rating, include = TRUE}
+#DF Player Rating Model - Fitting using 10-fold CV error
 gbmFit.param_DF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 gbmFit.param_DF
+DF_cv <- gbm.perf(gbmFit.param_DF, method = "cv")
+```
 
+```{r DF_Player_Rating_Min, include = FALSE}
 min_DF <- which.min(gbmFit.param_DF$cv.error)
 min_DF
 gbm.perf(gbmFit.param_DF, method = "cv")
@@ -202,37 +276,19 @@ plot(gbm.predict_DF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")]
 plot(gbm.predict_DF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF")], df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF")])
 
 mean((gbm.predict_DF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF")]-df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF")])^2)
+```
 
-#FW model
-gbmFit.param_FW <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
-gbmFit.param_FW
-
-min_FW <- which.min(gbmFit.param_FW$cv.error)
-min_FW
-gbm.perf(gbmFit.param_FW, method = "cv")
-
-gbmFit_FW <- gbm(Annualized_Salary ~., cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW"),-c(19,20,21,22,23)], distribution = "gaussian", n.trees = min_FW, interaction.depth = 1, shrinkage = 0.01)
-
-summary(gbmFit_FW)
-
-gbm.predict_FW = predict(gbmFit_FW, newdata = cor_df_merge[,-c(17,19,20,21,22,23)], n.trees = min_FW, type = "response")
-
-#Comparing actual vs expected in FW model
-hist(gbm.predict_FW[(cor_df_merge['Pos_new'] == "FW") & (df['League'] != "RFL")])
-hist(df$Annualized_Salary[(df['League'] != "RFL") & (df['Pos_new'] == "FW")], breaks = 20)
-
-plot(gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")], df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")])
-plot(gbm.predict_FW[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")], df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")])
-
-mean((gbm.predict_FW[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")]-df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")])^2)
-
+## GK Player Rating Model
+```{r GK_Player_Rating, include = TRUE}
 #GK model
 gbmFit.param_GK <- gbm(Annualized_Salary ~., data = gk_df[(gk_df['League'] != "RFL"),-c(16,17,18,19,20)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 gbmFit.param_GK
+GK_cv <- gbm.perf(gbmFit.param_GK, method = "cv")
+```
 
+```{r GK_Player_Rating_Min, include = FALSE}
 min_GK <- which.min(gbmFit.param_GK$cv.error)
 min_GK
-gbm.perf(gbmFit.param_GK, method = "cv")
 
 gbmFit_GK <- gbm(Annualized_Salary ~., data = gk_df[(gk_df['League'] != "RFL"),-c(16,17,18,19,20)], distribution = "gaussian", cv.fold = 10, n.trees = min_GK, interaction.depth = 1, shrinkage = 0.01)
 summary(gbmFit_GK)
@@ -244,6 +300,10 @@ plot(gbm.predict_GK[(gk_df['League'] == "RFL")], gk_df$Annualized_Salary[(gk_df[
 plot(gbm.predict_GK[(gk_df['League'] != "RFL")], gk_df$Annualized_Salary[(gk_df['League'] != "RFL")])
 
 mean((gbm.predict_GK[(gk_df['League'] != "RFL")]-gk_df$Annualized_Salary[(gk_df['League'] != "RFL")])^2)
+
+```
+
+```{r model_cont, include = FALSE}
 
 #Actual salary histograms
 hist(df$Annualized_Salary[(df['League'] != "RFL") & (df['Pos_new'] == "DF")], breaks = 20)
