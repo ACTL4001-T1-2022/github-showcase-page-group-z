@@ -380,6 +380,9 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
+Following this criteria led to picking a player selection for the national team as illustrated below:
+
+![](Markdown_Figures/national_team.png)
 
 
 
@@ -444,7 +447,21 @@ plot(team_stats$`2021 Tournament Place`, team_stats$DF_score)
 # write.csv(team_stats,"data/match_model_data.csv")
 ```
 
-```{r simulate_matches, eval = FALSE}
+## Team Rating Model
+A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
+
+1. Determines a team’s position score by averaging
+standardised salaries over each player position.
+2. Calculates the difference between two competing team’s position scores.
+3. Inputs the differences in position scores (**TODO: Insert excel hyperlink to match_model_data.xlsx**) into a GBM that outputs the probability of winning the matchup
+
+This model suggests that the differential in FW team scores is the most significant predictor in this GBM,
+highlighting the necessity of strong FW players
+
+**TODO: Insert table that shows the team data and probability of winning**
+
+
+```{r simulate_matches, include = FALSE}
 model_data <- read.csv("data/match_model.csv")
 
 model_data$Outcome <-ifelse(model_data$Outcome == 'Win',1,0)
@@ -472,20 +489,22 @@ gbm.perf(gbmMatch_param, method = "cv")
 
 gbm_match <- gbm(Outcome ~., data = model_data[,-c(2,3,4,5)], distribution = "bernoulli", n.trees = min_match_param, interaction.depth = 1, shrinkage = 0.01)
 
-summary(gbm_match)
+#summary(gbm_match)
 
 gbm.match.predict = predict(gbm_match, newdata = model_data[,-c(1,2,3,4,5)], n.trees = min_match_param, type = "response")
 
 mean(gbm.match.predict[1:246])
 mean(gbm.match.predict[247:492])
+```
+```{r fw_importance_graph, fig.show='hide'}
+gbm_match <- gbm(Outcome ~., data = model_data[,-c(2,3,4,5)], distribution = "bernoulli", n.trees = min_match_param, interaction.depth = 1, shrinkage = 0.01)
+summary(gbm_match)
+```
 
-
-
-
-
+```{r player_selection, include = FALSE}
 # Raritian players updated table ------------------------------------------
 column.names <- c('Player','Annualized_Salary','Expected_Salary', 'Pos_new', 'Salary_Ratio')
-select.quantile <- 0
+select.quantile <- 0.75
 
 # gbm.vector <- c(gbm.predict_DF,gbm.predict_FW,gbm.predict_GK,gbm.predict_MF)
 player.names <- cor_df_merge[,c('Player','Annualized_Salary','Pos_new','Nation')]
@@ -546,35 +565,38 @@ national.team <- rarita.gk[1:3,]
 national.team <- rbind(national.team, rarita.df[1:7,])
 national.team <- rbind(national.team, rarita.mf[1:7,])
 national.team <- rbind(national.team, rarita.fw[1:5,])
+national.team
+```
 
 
-
-
+```{r team_scores, include = FALSE}
 #PDP graphs
-par.df.DF <- partial(gbmFit_DF, pred.var = c('Expected_xG'), n.trees = min_DF)
-par.df.DF <- partial(gbmFit_DF, pred.var = c('xA'), n.trees = min_DF)
-par.df.DF <- partial(gbmFit_DF, pred.var = c('Tackles_Tkl'), n.trees = min_DF)
-autoplot(par.df.DF, contour = TRUE)
+#par.df.DF <- partial(gbmFit_DF, pred.var = c('Expected_xG'), n.trees = min_DF)
+#par.df.DF <- partial(gbmFit_DF, pred.var = c('xA'), n.trees = min_DF)
+#par.df.DF <- partial(gbmFit_DF, pred.var = c('Tackles_Tkl'), n.trees = min_DF)
+#autoplot(par.df.DF, contour = TRUE)
 
 total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$DF_Score*4/11 + team_stats$GK_Score*1/11
+```
 
 
+```{r team_scores_cont, include = FALSE}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
     summarise(Score = mean(Expected_Salary))
 
 
 
-national.team.stats[1,2]*1/11+ national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + national.team.stats[4,2]*2/11
-15151245*1/11+ 19606225*4/11 + 22892307*4/11 + 24088798*2/11
+#national.team.stats[1,2]*1/11+ national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + #national.team.stats[4,2]*2/11
+#15151245*1/11+ 19606225*4/11 + 22892307*4/11 + 24088798*2/11
 
 
-final.national.team <- national.team.stats%>%
-    add_row(Pos_new = "Total", Score = (national.team.stats[1,2]*1/11 
-                                        + national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + 
-                                            national.team.stats[4,2]*2/11))
+#final.national.team <- national.team.stats%>%
+#    add_row(Pos_new = "Total", Score = (national.team.stats[1,2]*1/11 
+#                                        + national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + 
+#                                            national.team.stats[4,2]*2/11))
 
-national.team.matchups <- read.csv("data/bad_team.csv")
+national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
 
 
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
@@ -583,8 +605,10 @@ national.team.matchups <- cbind(national.team.matchups, Probs = national.team.pr
 
 ```
 
+## FSA Match Simulation
+To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA in 10 years, we ran 1000 simulations of each objective using the code block below and then ran that 1000 times to generate a distribution of probabilities. 
 
-```{r simulations, eval = FALSE}
+```{r simulations}
 #Our team vs [18,23],[12,17],[6,11],[1,5]
 
 set.seed(1)
@@ -610,20 +634,16 @@ for (i in 1:1000) {
     
     prob_top10_5yrs[i] <- sim_counter/1000
 }
-hist(prob_top10_5yrs)
+```
 
+
+```{r simulations_cont, include = FALSE}
+hist(prob_top10_5yrs)
 prob_top10_5yrs.df <- data.frame(probs = prob_top10_5yrs)
 
 #CI of top 10
 mean(prob_top10_5yrs) - qnorm(0.975, 0, 1) * sd(prob_top10_5yrs) / sqrt(1000)
 mean(prob_top10_5yrs) + qnorm(0.975, 0, 1) * sd(prob_top10_5yrs) / sqrt(1000)
-
-
-ggplot(prob_top10_5yrs.df)+
-    geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
-    labs(x = "Probability of attaining FSA Top 10 in 5 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "FSA Top 10 in 5 years")+
-    theme_bw() +
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
 
 set.seed(1)
 #Probability that our team is in the top 10 for the majority of the time within 5 years
@@ -682,14 +702,6 @@ mean(prob_win_10yrs) - qnorm(0.975, 0, 1) * sd(prob_win_10yrs) / sqrt(1000)
 mean(prob_win_10yrs) + qnorm(0.975, 0, 1) * sd(prob_win_10yrs) / sqrt(1000)
 
 prob_win_10yrs.df <- data.frame(probs = prob_win_10yrs)
-
-
-ggplot(prob_win_10yrs.df)+
-    geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
-    labs(x = "Probability of winning FSA Championship in 10 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "FSA Championship in 10 years")+
-    theme_bw() +
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
-
 
 #Probability thresholds over time - monitoring performance for the at least one win within 10 years
 set.seed(1)
@@ -750,7 +762,29 @@ five.year.bm <- data.frame(x = seq(2022,2026),
                            y = sort(prob_top10_5yrs_benchmark, TRUE))
 ```
 
-```{r plots, eval = FALSE}
+## Competitiveness of team
+
+Based on our selected national team, we can see that the national team comfortably exceeds the performance constraints. Here, the 95% confidence interval for the probabilities of attaining an FSA championship top-10 in 5 years and winning the FSA championship in 10 years is (91.540%, 91.647%) and (76.332%, 76.500%) respectively. These are well above the corresponding 85% and 70% thresholds established.
+
+```{r competitiveness_of_team_plots}
+
+par(mfrow = c(1,2))
+ggplot(prob_top10_5yrs.df)+
+    geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
+    labs(x = "Probability of attaining FSA Top 10 in 5 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "FSA Top 10 in 5 years")+
+    theme_bw() +
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
+
+ggplot(prob_win_10yrs.df)+
+    geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
+    labs(x = "Probability of winning FSA Championship in 10 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "FSA Championship in 10 years")+
+    theme_bw() +
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
+
+```
+
+
+```{r plots, include = FALSE}
 
 #Set xend and yend
 ten.year.bm$xend <- seq(2023,2032)
