@@ -69,7 +69,7 @@ cor_tourn_merge <- cor_tourn_merge[,keep]
 
 
 #### Remove Data except the following #####
-rm(list= ls()[! (ls() %in% c('cor_tourn_merge'))])
+# rm(list= ls()[! (ls() %in% c('cor_tourn_merge'))])
 # save(cor_tourn_merge,file = "data/tourn_merge.RData")
 
 
