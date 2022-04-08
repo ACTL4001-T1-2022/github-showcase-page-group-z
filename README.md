@@ -233,8 +233,8 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
 
 ![](README_files/figure-markdown_github/Standardised_Graphs-4.png)
 
-Following this criteria led to picking a player selection for the
-national team as illustrated below:
+Following this criteria led to a player selection for the national team
+as illustrated below:
 
 ![](Markdown_Figures/national_team.png)
 
@@ -275,10 +275,10 @@ FSA Match Simulation
 --------------------
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5
-years and winning the FSA Championships in 10 years, we ran 1000
+years and winning the FSA Championships in 10 years, we run 1000
 simulations of tournament bracket outcomes to obtain a single
-probability using the code block below. We then repeated this process
-1000 times to generate a distribution of probabilities.
+probability using the code block below. We then repeat this process 1000
+times to generate a distribution of probabilities.
 
 ``` r
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -343,15 +343,18 @@ ggplot(prob_win_10yrs.df)+
 Limitations of Team Selection
 -----------------------------
 
-Several limitations were inherent to the modelling process: \* It is
-assumed that all teams in FSA maintain the same team composition over
-ten years and that players remain at their skill level (ignoring
-skill-growth and aging). This is unlikely to be valid in practice. \*
-Alternative models such as neural networks and AdaBoost were not
-considered and may have exhibited higher predictive power. \* Models are
-fitted using a validation-set approach, removing the incorporation of
-potentially valuable information. The resulting model is dependent on
-which observations are included in the training and validation sets.
+Several limitations were inherent to the modelling process:
+
+-   It is assumed that all teams in FSA maintain the same team
+    composition over ten years and that players remain at their skill
+    level (ignoring skill-growth and aging). This is unlikely to be
+    valid in practice.
+-   Alternative models such as neural networks and AdaBoost were not
+    considered and may have exhibited higher predictive power.
+-   Models are fitted using a validation-set approach, removing the
+    incorporation of potentially valuable information. The resulting
+    model is dependent on which observations are included in the
+    training and validation sets.
 
 Economic Impact
 ===============
@@ -359,11 +362,42 @@ Economic Impact
 Implementation Plan
 ===================
 
-Ethics
-======
+**TODO: Add Road Map image**
+
+Our implementation consists of three major components: A team set-up, a
+marketing/sponsorship strategy, and a strategy to monitor performance of
+our team. \* The team set-up proposes the use of wearable technology to
+personalise training, monitoring and rehabilitation, as well as the
+introduction of boot camps. \* Our marketing and sponsorship strategy
+ethically distributes investments across Raritan provinces by applying a
+utilitarian approach. We propose that to maximise social impact,
+football infrastructure should be built in West Rarita due ot its lower
+GDP-per-capita. We also suggest targeted marketing towards affluent
+provinces that will likely have higher consumer demand for football
+merchandise. Finally, we propose the creation of a Rarita Fantasy Team
+League as these individuals tend to attend more games, consume more
+content and spend more merchandise. \* To evaluate player performance,
+we suggest using position-specific metrics which are supported by our
+GBM player-rating model and external research. We also have established
+a framework for annual monitoring of our team’s competitiveness.
+
+For additional information regarding our implementation plan, please
+refer to **TODO: Add link to report pdf**
 
 Risk and Risk Mitigation Considerations
 =======================================
 
 Conclusion
 ==========
+
+Through extensive analysis, it is evident that the proposed national
+team effectively balances the trade-off between competitiveness and
+economic viability; comfortably exceeding its performance objectives.
+The project is economically feasible given its positive NPV and
+effectively considers key risks inhibiting successful implementation. It
+also considers the nature of Raritan demographics, ensuring marketing
+strategies and football investments are tailored towards provincial
+needs and adhere to ethical frameworks. Although the project will likely
+deliver a positive economic impact to Rarita, regular monitoring of team
+performance and public interest in the Raritan football program will be
+crucial to project success.
