@@ -37,6 +37,7 @@ PLAYER_tourn_res_2020 <- readxl::read_excel("data/player-modified.xlsx",sheet = 
 PLAYER_tourn_res_2021 <- readxl::read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "E11:F35")
 ```
 
+We can see that the Raritan Football League has a much lower Annualised Salary compared to the other leagues.
 ```{r Annualized_Salary_League}
 ggplot(PLAYER_league_non_goal_salary, aes(x = League, 
                                           y = Annualized_Salary))+
@@ -46,38 +47,28 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
+Forward positions are shown to have higher `shots on target per 90 minutes`, as well as various other shooting metrics, including `expected goals`, `shots total per 90 minutes`. This position are shown to have higher value.
+```{r Box Plots on Standard_Sh/90}
+require(gridExtra)
+p1<- ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Standard_SoT/90`)) + 
+    geom_boxplot(outlier.shape = NA) + 
+    coord_cartesian(ylim =  c(0, 3)) +
+    labs(x = "Position")
 
-```{r}
-#KPI analysis
-fw.kpi <- c('Standard_Sh','Standard_SoT','Standard_G/Sh','Expected_xG')
-mf.kpi <- c('CrsPA','KP','Total_Cmp','PPA','1/3')
-df.kpi <- c('Int','Clr','Tackles_TklW')
-gk.kpi <- c('Performance_GA90')
+p2<-ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Expected_xG`)) + 
+    geom_boxplot(outlier.shape = NA) + 
+    coord_cartesian(ylim =  c(0, 1))+
+    labs(x = "Position")
 
-#Histogram plots
-
-make.histogram <- function(kpis, position, data, path = F) {
-    
-    for (kpi in kpis) {
-        position.df <- PLAYER_league_non_goal_salary %>%
-            filter(Pos_new == position)%>%
-            filter(!(abs(!!as.name(kpi) - median(!!as.name(kpi))) > 2*sd(!!as.name(kpi))))
-        p<- ggplot(position.df, aes(x = !!as.name(kpi))) +
-            geom_histogram(stat = "count")+
-            labs(title = paste(position, "histogram"))
-        print(p)
-        
-    }
-}
-
-# make.histogram(fw.kpi, 'FW',PLAYER_league_non_goal_salary)
-# make.histogram(df.kpi, 'DF',PLAYER_league_non_goal_salary)
-# make.histogram(mf.kpi, 'MF',PLAYER_league_non_goal_salary)
-# make.histogram(gk.kpi, 'GK',PLAYER_league_goal_salary)
+p3<-ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Standard_Sh/90`)) + 
+    geom_boxplot(outlier.shape = NA) + 
+    coord_cartesian(ylim =  c(0, 5)) +
+    labs(x = "Position")
+grid.arrange(p1,p2,p3,ncol = 1)
 ```
 
-
-```{r linear_regression_models, include = FALSE}
+Based on the results from Linear Regression, players with low Annualized Salary and high Predicted Salary would be the players desirable for the Raritan Football Team.
+```{r linear_regression_models, include = T}
 # LINEAR REGRESSION
 
 cols_to_remove <- c("Pos_new","Player","Nation","League","Squad")
@@ -103,12 +94,7 @@ for (level in pos_levels) {
     
 }
 
-
-mean(FW_nonRFL_mod$residuals^2)
-mean((DF_nonRFL_mod$residuals^2))
-mean(MF_nonRFL_mod$residuals^2)
-
-
+par(mfrow= c(1,3))
 plot(MF_RFL$Annualized_Salary,MF_RFL$Predicted_Sal, main= "MF RFL")
 plot(DF_RFL$Annualized_Salary,DF_RFL$Predicted_Sal, main= "DF RFL")
 plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
@@ -331,7 +317,7 @@ ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = FW_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = paste0("Annualised Salary (",expression(partialdiff)), y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
+    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -443,8 +429,6 @@ team_stats <- cbind(team_stats,total_score)
 team_stats <- team_stats %>% arrange(`2021 Tournament Place`, descending = T)
 
 plot(team_stats$`2021 Tournament Place`, team_stats$DF_score)
-
-# write.csv(team_stats,"data/match_model_data.csv")
 ```
 
 ## Team Rating Model
