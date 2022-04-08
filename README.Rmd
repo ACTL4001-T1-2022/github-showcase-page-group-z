@@ -899,6 +899,21 @@ For additional information regarding our implementation plan, please refer to **
 
 
 # Risk and Risk Mitigation Considerations
+The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to **TODO: Add link to report pdf**
+
+![](Markdown_Figures/Heat_Map.png)
+
+## Financial Risks
+
+![](Markdown_Figures/Financial_Risk.png)
+
+## Operational Risks
+
+![](Markdown_Figures/Operational_Risk.png)
+
+## Other Risks
+
+![](Markdown_Figures/Other_Risk.png)
 
 # Conclusion
 Through extensive analysis, it is evident that the proposed national team effectively balances the trade-off between competitiveness and economic viability; comfortably exceeding its performance objectives. The project is economically feasible given its positive NPV and effectively considers key risks inhibiting successful implementation. It also considers the nature of Raritan demographics, ensuring marketing strategies and football investments are tailored towards provincial needs and adhere to ethical frameworks. Although the project will likely deliver a positive economic impact to Rarita, regular monitoring of team performance and public interest in the Raritan football program will be crucial to project success.

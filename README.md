@@ -366,26 +366,54 @@ Implementation Plan
 
 Our implementation consists of three major components: A team set-up, a
 marketing/sponsorship strategy, and a strategy to monitor performance of
-our team. \* The team set-up proposes the use of wearable technology to
-personalise training, monitoring and rehabilitation, as well as the
-introduction of boot camps. \* Our marketing and sponsorship strategy
-ethically distributes investments across Raritan provinces by applying a
-utilitarian approach. We propose that to maximise social impact,
-football infrastructure should be built in West Rarita due ot its lower
-GDP-per-capita. We also suggest targeted marketing towards affluent
-provinces that will likely have higher consumer demand for football
-merchandise. Finally, we propose the creation of a Rarita Fantasy Team
-League as these individuals tend to attend more games, consume more
-content and spend more merchandise. \* To evaluate player performance,
-we suggest using position-specific metrics which are supported by our
-GBM player-rating model and external research. We also have established
-a framework for annual monitoring of our team’s competitiveness.
+our team.
+
+-   The team set-up proposes the use of wearable technology to
+    personalise training, monitoring and rehabilitation, as well as the
+    introduction of boot camps.
+-   Our marketing and sponsorship strategy ethically distributes
+    investments across Raritan provinces by applying a utilitarian
+    approach. We propose that to maximise social impact, football
+    infrastructure should be built in West Rarita due ot its lower
+    GDP-per-capita. We also suggest targeted marketing towards affluent
+    provinces that will likely have higher consumer demand for football
+    merchandise. Finally, we propose the creation of a Rarita Fantasy
+    Team League as these individuals tend to attend more games, consume
+    more content and spend more merchandise.
+-   To evaluate player performance, we suggest using position-specific
+    metrics which are supported by our GBM player-rating model and
+    external research. We also have established a framework for annual
+    monitoring of our team’s competitiveness.
 
 For additional information regarding our implementation plan, please
 refer to **TODO: Add link to report pdf**
 
 Risk and Risk Mitigation Considerations
 =======================================
+
+Key Identifiable Risk
+---------------------
+
+The project is subject to various risks impacting the likelihood of
+successful implementation. For additional information regarding risk
+analysis, please refer to **TODO: Add link to report pdf**
+
+![](Markdown_Figures/Heat_Map.png)
+
+Financial Risks
+---------------
+
+![](Markdown_Figures/Financial_Risk.png)
+
+Operational Risks
+-----------------
+
+![](Markdown_Figures/Operational_Risk.png)
+
+Other Risks
+-----------
+
+![](Markdown_Figures/Other_Risk.png)
 
 Conclusion
 ==========
