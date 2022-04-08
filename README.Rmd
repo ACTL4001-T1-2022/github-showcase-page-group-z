@@ -445,7 +445,7 @@ A team rating model is created to rate team performance and calculate the probab
 This model suggests that the differential in FW team scores is the most significant predictor in this GBM,
 highlighting the necessity of strong FW players.
 
-**TODO: Insert table that shows the team data and probability of winning**
+
 
 
 ```{r simulate_matches, include = FALSE}
