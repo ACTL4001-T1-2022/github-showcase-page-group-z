@@ -870,7 +870,8 @@ Several limitations were inherent to the modelling process:
 
 # Implementation Plan
 
+
 # Risk and Risk Mitigation Considerations
 
 # Conclusion
-
+Through extensive analysis, it is evident that the proposed national team effectively balances the trade-off between competitiveness and economic viability; comfortably exceeding its performance objectives. The project is economically feasible given its positive NPV and effectively considers key risks inhibiting successful implementation. It also considers the nature of Raritan demographics, ensuring marketing strategies and football investments are tailored towards provincial needs and adhere to ethical frameworks. Although the project will likely deliver a positive economic impact to Rarita, regular monitoring of team performance and public interest in the Raritan football program will be crucial to project success.
