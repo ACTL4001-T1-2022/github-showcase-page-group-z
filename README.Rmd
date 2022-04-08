@@ -42,8 +42,7 @@ We can see that the Raritan Football League has a much lower Annualised Salary c
 ggplot(PLAYER_league_non_goal_salary, aes(x = League, 
                                           y = Annualized_Salary))+
     geom_boxplot()+
-    theme_bw()+
-    labs(x = "League", y = "Annualised Salary (∂)", title = "Box Plot of Annualized Salary per League")+
+    labs(x = "League", y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Box Plot of Annualized Salary per League")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
@@ -68,7 +67,7 @@ grid.arrange(p1,p2,p3,ncol = 1)
 ```
 
 Based on the results from Linear Regression, players with low Annualized Salary and high Predicted Salary would be the players desirable for the Raritan Football Team.
-```{r linear_regression_models, include = T}
+```{r linear_regression_models}
 # LINEAR REGRESSION
 
 cols_to_remove <- c("Pos_new","Player","Nation","League","Squad")
@@ -295,19 +294,23 @@ mean((gbm.predict_GK[(gk_df['League'] != "RFL")]-gk_df$Annualized_Salary[(gk_df[
 ```
 To optimise the number of trees in the GBMs, CV error as a function of number of trees is plotted below. Note that the green and black lines represent test error and training error respectively.
 
-**TODO: Add title to graphs**
+
 ```{r CV_plots, include = TRUE}
 par(mfrow = c(2,2))
 FW_cv <- gbm.perf(gbmFit.param_FW, method = "cv")
+title(main = "FW")
 MF_cv <- gbm.perf(gbmFit.param_MF, method = "cv")
+title(main = "MF")
 DF_cv <- gbm.perf(gbmFit.param_DF, method = "cv")
+title(main = "DF")
 GK_cv <- gbm.perf(gbmFit.param_GK, method = "cv")
+title(main = "GK")
 ```
 
 ## Player Selection
 Our goal is to enlist the most cost-efficient RFL players for player selection that maximise economic impact. These players exhibit the highest standardised-to-annualised salary ratios, delivering high performance at low cost. However, player selection is restricted to the top 25% highest-paid players to meet our FSA performance objectives. Without this additional restriction, sufficient competitiveness is not achieved.
 
-``` {r Standardised_Graphs, include = TRUE}
+``` {r Standardised_Graphs, include = TRUE, warning = FALSE}
 #FW
 FW_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]))
 FW_select <- FW_plot_data[(gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")] > 4.41),]
@@ -317,7 +320,7 @@ ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = FW_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -332,7 +335,7 @@ ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = MF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL MF Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL MF Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -346,7 +349,7 @@ ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = DF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL DF Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL DF Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -360,7 +363,7 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = GK_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL GK Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL GK Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -434,13 +437,13 @@ plot(team_stats$`2021 Tournament Place`, team_stats$DF_score)
 ## Team Rating Model
 A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
 
-1. Determines a team’s position score by averaging
-standardised salaries over each player position.
-2. Calculates the difference between two competing team’s position scores.
-3. Inputs the differences in position scores (**TODO: Insert excel hyperlink to match_model_data.xlsx**) into a GBM that outputs the probability of winning the matchup
+1. Determines a team’s position score by averaging standardised salaries over each player position
+2. Calculates the difference between two competing team’s position scores
+3. Inputs the differences in position scores (![match_model_data](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
+4. Repeat the procedure between Rarita and other teams ![match_model_data](data/match_model_data_rarita.xlsx).
 
 This model suggests that the differential in FW team scores is the most significant predictor in this GBM,
-highlighting the necessity of strong FW players
+highlighting the necessity of strong FW players.
 
 **TODO: Insert table that shows the team data and probability of winning**
 
@@ -563,8 +566,8 @@ national.team
 total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$DF_Score*4/11 + team_stats$GK_Score*1/11
 ```
 
-
-```{r team_scores_cont, include = FALSE}
+Below code shows the predicted probability of Rarita winning a matchup.
+```{r team_scores_cont}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
     summarise(Score = mean(Expected_Salary))
@@ -586,7 +589,7 @@ national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
 
 national.team.matchups <- cbind(national.team.matchups, Probs = national.team.predict)
-
+national.team.matchups
 ```
 
 ## FSA Match Simulation
@@ -621,7 +624,7 @@ for (i in 1:1000) {
 ```
 
 
-```{r simulations_cont, include = FALSE}
+```{r simulations_cont}
 hist(prob_top10_5yrs)
 prob_top10_5yrs.df <- data.frame(probs = prob_top10_5yrs)
 
@@ -768,7 +771,7 @@ ggplot(prob_win_10yrs.df)+
 ```
 
 
-```{r plots, include = FALSE}
+```{r plots}
 
 #Set xend and yend
 ten.year.bm$xend <- seq(2023,2032)
@@ -810,7 +813,7 @@ ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = MF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL MF Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL MF Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -824,7 +827,7 @@ ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = DF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL DF Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL DF Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -838,7 +841,7 @@ ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = FW_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
@@ -852,7 +855,7 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = GK_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = "Annualised Salary (∂)", y = "Standardised Salary (∂)", title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL GK Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL GK Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
