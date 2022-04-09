@@ -455,8 +455,7 @@ plot(team_stats$`2021 Tournament Place`, team_stats$DF_score)
 ```
 
 ## Team Rating Model
-<<<<<<< HEAD
-=======
+
 A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
 
 1. Determines a team’s position score by averaging standardised salaries over each player position
@@ -466,7 +465,6 @@ A team rating model is created to rate team performance and calculate the probab
 
 This model suggests that the differential in FW team scores is the most significant predictor in this GBM,
 highlighting the necessity of strong FW players.
->>>>>>> main
 
 A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
 
@@ -597,10 +595,8 @@ total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$
 
 Below code shows the predicted probability of Rarita winning a matchup.
 
-<<<<<<< HEAD
-=======
 #TODO Clean up national.team.stats??
->>>>>>> main
+
 ```{r team_scores_cont}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
@@ -627,14 +623,11 @@ national.team.matchups
 ```
 
 ## FSA Match Simulation
-<<<<<<< HEAD
 
-To calculate probabilities of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities.
-=======
 We assumed a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities. 
->>>>>>> main
+
 
 Using a similar simulation technique, we also calculated the probability that our team is placed in 
 
@@ -670,16 +663,13 @@ for (i in 1:1000) {
 }
 ```
 
-<<<<<<< HEAD
-```{r simulations_cont}
-hist(prob_top10_5yrs)
-=======
+
 
 ```{r simulations_cont, eval = sim_TRUE}
 hist(prob_top10_5yrs,
      main = "Histogram of Probability of top 10 at least once in 5 years",
      xlab = "Probability of top 10 at least once in 5 years")
->>>>>>> main
+
 prob_top10_5yrs.df <- data.frame(probs = prob_top10_5yrs)
 
 #CI of top 10
@@ -827,12 +817,8 @@ ggplot(prob_win_10yrs.df)+
 
 ```
 
-<<<<<<< HEAD
-```{r plots}
-=======
 
 ```{r plots, warning = FALSE, eval = sim_TRUE}
->>>>>>> main
 
 #Set xend and yend
 ten.year.bm$xend <- seq(2023,2032)
@@ -966,17 +952,15 @@ The following sensitivity analysis allows for an understanding of the alternativ
 
 ## Reserve and Investment Strategy
 
-<<<<<<< HEAD
+
 To ensure that we have sufficient liquid assets to cover any unexpected costs or reduction in revenue, reserve is established based on our estimates for a pessimistic scenario with 2 strongest revenue and cost drivers, where:
-=======
-For additional information regarding our implementation plan, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report Submission.pdf).
->>>>>>> main
+
 
 -   Sponsorship revenues are 20% lower than expected, and
 
 -   Player salaries are 20% higher.
 
-<<<<<<< HEAD
+
 The remaining assets will be invested into the Vanguard Balanced Index Fund as it provides the
 project with a diverse and stable exposure to domestic equities, international equities, domestic fixed interest and international fixed interest securities.
 
@@ -1007,7 +991,6 @@ The project is subject to various risks impacting the likelihood of successful i
 =======
 # Risk and Risk Mitigation Considerations
 The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report Submission.pdf).
->>>>>>> main
 
 ![](Markdown_Figures/Heat_Map.png)
 
