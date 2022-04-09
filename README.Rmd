@@ -463,15 +463,6 @@ A team rating model is created to rate team performance and calculate the probab
 
 1.  Determines a team's position score by averaging standardised salaries over each player position
 2.  Calculates the difference between two competing team's position scores
-3.  Inputs the differences in position scores (See ![](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
-4.  Repeat the procedure between Rarita and other teams (See ![](data/match_model_data_rarita.xlsx)).
-
-This model suggests that the differential in FW team scores is the most significant predictor in this GBM, highlighting the necessity of strong FW players.
-
-A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
-
-1.  Determines a team's position score by averaging standardised salaries over each player position
-2.  Calculates the difference between two competing team's position scores
 3.  Inputs the differences in position scores (![match_model_data](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
 4.  Repeat the procedure between Rarita and other teams ![match_model_data](data/match_model_data_rarita.xlsx).
 
@@ -595,38 +586,27 @@ national.team
 total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$DF_Score*4/11 + team_stats$GK_Score*1/11
 ```
 
-Below code shows the predicted probability of Rarita winning a matchup.
+Using our selected team, we can determine the predicted probabilities of Rarita winning their matchups as seen below:
 
-\#TODO Clean up national.team.stats??
-
-```{r team_scores_cont}
+```{r team_scores_cont, include = FALSE}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
     summarise(Score = mean(Expected_Salary))
 
+```
 
-
-#national.team.stats[1,2]*1/11+ national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + #national.team.stats[4,2]*2/11
-#15151245*1/11+ 19606225*4/11 + 22892307*4/11 + 24088798*2/11
-
-
-#final.national.team <- national.team.stats%>%
-#    add_row(Pos_new = "Total", Score = (national.team.stats[1,2]*1/11 
-#                                        + national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + 
-#                                            national.team.stats[4,2]*2/11))
-
+```{r matchups}
 national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
-
 
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
 
 national.team.matchups <- cbind(national.team.matchups, Probs = national.team.predict)
-national.team.matchups
+national.team.matchups[,c(1,2,8)]
 ```
 
 ## FSA Match Simulation
 
-We assumed a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
+We assume a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities.
 
