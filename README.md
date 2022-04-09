@@ -475,166 +475,6 @@ for (i in 1:1000) {
 }
 ```
 
-``` r
-hist(prob_top10_5yrs,
-     main = "Histogram of Probability of top 10 at least once in 5 years",
-     xlab = "Probability of top 10 at least once in 5 years")
-```
-
-![](README_files/figure-gfm/simulations_cont-1.png)<!-- -->
-
-``` r
-prob_top10_5yrs.df <- data.frame(probs = prob_top10_5yrs)
-
-#CI of top 10
-mean(prob_top10_5yrs) - qnorm(0.975, 0, 1) * sd(prob_top10_5yrs) / sqrt(1000)
-```
-
-    ## [1] 0.912973
-
-``` r
-mean(prob_top10_5yrs) + qnorm(0.975, 0, 1) * sd(prob_top10_5yrs) / sqrt(1000)
-```
-
-    ## [1] 0.914069
-
-``` r
-set.seed(1)
-#Probability that our team is in the top 10 for the majority of the time within 5 years
-prob_top10_5yrs_majority <- c()
-for (i in 1:1000) {
-    #successful outcome
-    sim_counter <- 0
-    #Calculate a single probability
-    for (j in 1:1000) {
-        win_two_match_prob <- national.team.matchups[floor(runif(5, min = 18, max = 24)),"Probs"]*national.team.matchups[floor(runif(5, min = 12, max = 18)),"Probs"]
-        #How many times I become top 10 in 5 yrs
-        count <- 0
-        
-        for (k in 1:5) {
-            count <- count + rbinom(1, 1, win_two_match_prob[k])
-        }
-        
-        if (count >= 3) {
-            sim_counter <- sim_counter + 1
-        }
-    }
-    
-    prob_top10_5yrs_majority[i] <- sim_counter/1000
-}
-hist(prob_top10_5yrs_majority, 
-     main = "Histogram of Probability of top 10 for the majority of time in 5 years",
-     xlab = "Probability of top 10 for the majority of time in 5 years")
-```
-
-![](README_files/figure-gfm/simulations_cont-2.png)<!-- -->
-
-``` r
-set.seed(1)
-#Probability that our team wins the championship at least once within 10 years
-prob_win_10yrs <- c()
-for (i in 1:1000) {
-    #successful outcome
-    sim_counter <- 0
-    #Calculate a single probability
-    for (j in 1:1000) {
-        win_prob <- national.team.matchups[floor(runif(10, min = 18, max = 24)),"Probs"]*national.team.matchups[floor(runif(10, min = 12, max = 18)),"Probs"]*national.team.matchups[floor(runif(10, min = 6, max = 12)),"Probs"]*national.team.matchups[floor(runif(10, min = 1, max = 6)),"Probs"]
-        #How many times I win
-        count <- 0
-        
-        for (k in 1:10) {
-            count <- count + rbinom(1, 1, win_prob[k])
-        }
-        
-        if (count >= 1) {
-            sim_counter <- sim_counter + 1
-        }
-    }
-    
-    prob_win_10yrs[i] <- sim_counter/1000
-}
-hist(prob_win_10yrs,
-     main = "Histogram of Probability of winning at least once in 10 years",
-     xlab = "Probability of winning at least once in 10 years")
-```
-
-![](README_files/figure-gfm/simulations_cont-3.png)<!-- -->
-
-``` r
-#CI of winning prob
-mean(prob_win_10yrs) - qnorm(0.975, 0, 1) * sd(prob_win_10yrs) / sqrt(1000)
-```
-
-    ## [1] 0.7580336
-
-``` r
-mean(prob_win_10yrs) + qnorm(0.975, 0, 1) * sd(prob_win_10yrs) / sqrt(1000)
-```
-
-    ## [1] 0.7597124
-
-``` r
-prob_win_10yrs.df <- data.frame(probs = prob_win_10yrs)
-
-#Probability thresholds over time - monitoring performance for the at least one win within 10 years
-set.seed(1)
-prob_win_10yrs_benchmark <- c()
-for (i in 1:10) {
-    sim_counter <- 0
-    #Calculate a single probability benchmark
-    for (j in 1:1000) {
-        win_prob <- national.team.matchups[floor(runif(i, min = 18, max = 24)),"Probs"]*national.team.matchups[floor(runif(i, min = 12, max = 18)),"Probs"]*national.team.matchups[floor(runif(i, min = 6, max = 12)),"Probs"]*national.team.matchups[floor(runif(i, min = 1, max = 6)),"Probs"]
-        #How many times I win
-        count <- 0
-        
-        for (k in 1:i) {
-            count <- count + rbinom(1, 1, win_prob[k])
-        }
-        
-        if (count >= 1) {
-            sim_counter <- sim_counter + 1
-        }
-    } 
-    prob_win_10yrs_benchmark[i] <- sim_counter/1000
-}
-
-prob_win_10yrs_benchmark <- prob_win_10yrs_benchmark - (prob_win_10yrs_benchmark[10]-0.7)
-
-
-
-
-#Probability thresholds over time - monitoring performance for the at least one top 10 within 5 years
-set.seed(1)
-prob_top10_5yrs_benchmark <- c()
-for (i in 1:5) {
-    sim_counter <- 0
-    #Calculate a single probability benchmark
-    for (j in 1:1000) {
-        win_prob <- national.team.matchups[floor(runif(i, min = 18, max = 24)),"Probs"]*national.team.matchups[floor(runif(i, min = 12, max = 18)),"Probs"]
-        #How many times I become top 10 in 5 yrs
-        count <- 0
-        
-        for (k in 1:i) {
-            count <- count + rbinom(1, 1, win_prob[k])
-        }
-        
-        if (count >= 1) {
-            sim_counter <- sim_counter + 1
-        }
-    } 
-    prob_top10_5yrs_benchmark[i] <- sim_counter/1000
-}
-
-prob_top10_5yrs_benchmark <- prob_top10_5yrs_benchmark - (prob_top10_5yrs_benchmark[5]-0.85)
-
-
-ten.year.bm <- data.frame(x = seq(2022,2031),
-                           y = sort(prob_win_10yrs_benchmark, TRUE))
-
-five.year.bm <- data.frame(x = seq(2022,2026),
-                           y = sort(prob_top10_5yrs_benchmark, TRUE))
-```
-
 ## 4.5 Competitiveness of team
 
 Based on our selected national team, we can see that the national team
@@ -659,7 +499,7 @@ ggplot(prob_top10_5yrs.df)+
 ``` r
 ggplot(prob_win_10yrs.df)+
     geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
-    labs(x = "Probability of winning FSA Championship in 10 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "FSA Championship in 10 years")+
+    labs(x = "Probability of winning FSA Championship in 10 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "Winning FSA Championship in 10 years")+
     theme_bw() +
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
 ```
@@ -800,7 +640,9 @@ Several limitations were inherent to the modelling process:
 This section details our projected cost and revenue figures, followed by
 a NPV and sensitivity analysis which critically assesses alternative
 future states. It also outlines our reserve and investment strategies
-and the broader economic impact.
+and the broader economic impact. For more information, please find
+![Revenue and costs
+analysis.xlsx](Model_Objects/Revenue%20and%20costs%20analysis.xlsx)
 
 ## 5.1 Revenue & Costs
 
@@ -814,11 +656,11 @@ depending on tournament outcome. Furthermore, Annual sponsorship revenue
 generated by the top FIFA football team was used as a guide to project
 Rarita’s sponsorship revenue over the next 10 years.
 
-<img src="Graphs/tournament_prize.png" title="FIFA tournament prize pool reference" width="375"/>
+![](Graphs/tournament_prize.png)
 
-<img src="Graphs/sponsorship_revenue.png" title="Average yearly sponsorship for top FIFA teams" alt="Average yearly sponsorship for top FIFA teams" width="346"/>
+![](Graphs/sponsorship_revenue.png)
 
-<img src="Graphs/sponsorship.png" title="Projected 10 year sponsorship for FSA" alt="Projected 10 year sponsorship for FSA" width="339"/>
+![](Graphs/sponsorship.png)
 
 ![](Graphs/sponsorshop%20percentage.png)
 
@@ -839,7 +681,7 @@ of ∂995m comfortably covers the initial discounted loss of ∂32.12m.
 
 ![](Graphs/NPV%20table.png)
 
-<img src="Graphs/NPV plot.png" width="386"/>
+![](Graphs/NPV%20plot.png)
 
 The following sensitivity analysis allows for an understanding of the
 alternative scenarios and the boundaries for negative NPV. See our full
@@ -904,12 +746,14 @@ our team.
 -   To evaluate player performance, we suggest using position-specific
     metrics which are supported by our GBM player-rating model and
     external research. We also have established a framework for annual
-    monitoring of our team’s competitiveness.
+    monitoring of our team’s competitiveness. The benchmarks are shown
+    in the simulations of [Competitiveness of
+    Team](#competitiveness-of-team)
 
 For additional information regarding our implementation plan, please
 refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
-# 7 6.Risk and Risk Mitigation Considerations
+# 7 Risk and Risk Mitigation Considerations
 
 The project is subject to various risks impacting the likelihood of
 successful implementation. For additional information regarding risk
