@@ -633,7 +633,7 @@ Using a similar simulation technique, we also calculated the probability that ou
 
 1. top 10 for the majority of the time within 5 years
 2. wins the championship at least once within 10 years
-3. win probability each year over the remaining years.
+3. top 10 over the remaining years
 
 ```{r simulations, eval = sim_TRUE}
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -945,7 +945,7 @@ The analysis suggests that this project exhibits a positive NPV of ∂3.462m and
 
 <img src="Graphs/NPV plot.png" width="386"/>
 
-The following sensitivity analysis allows for an understanding of the alternative scenarios and the boundaries for negative NPV. See our full report for details ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+The following sensitivity analysis allows for an understanding of the alternative scenarios and the boundaries for negative NPV. See our full report for details ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
 ![](Graphs/sensitivity%201.png)
 ![](Graphs/sensitivity%202.png)
@@ -964,12 +964,12 @@ To ensure that we have sufficient liquid assets to cover any unexpected costs or
 The remaining assets will be invested into the Vanguard Balanced Index Fund as it provides the
 project with a diverse and stable exposure to domestic equities, international equities, domestic fixed interest and international fixed interest securities.
 
-## 
+
 ![](Graphs/investment.png)
 
-Broader Economic Impact
+## Broader Economic Impact
 
-We have identified in our data that there is a positive correlation between tournament ranking and the league profits, implying that development in a national football team for Rarita will lead to a positive financial impact for the nation's GDP. Research also suggests that sport-related employment accounts for an average of 1.5% of total employment in some European countries. Hence, we estimate that sporting activities are expected to contribute up to 2% of GDP per-capita in East Rarita and 0.5% GDP in West Rarita. See our full report for detailed explanation ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+We have identified in our data that there is a positive correlation between tournament ranking and the league profits, implying that development in a national football team for Rarita will lead to a positive financial impact for the nation's GDP. Research also suggests that sport-related employment accounts for an average of 1.5% of total employment in some European countries. Hence, we estimate that sporting activities are expected to contribute up to 2% of GDP per-capita in East Rarita and 0.5% GDP in West Rarita. See our full report for detailed explanation ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
 ![](Graphs/placement%20correlation.png)
 
@@ -983,14 +983,12 @@ Our implementation consists of three major components: A team set-up, a marketin
 -   Our marketing and sponsorship strategy ethically distributes investments across Raritan provinces by applying a utilitarian approach. We propose that to maximise social impact, football infrastructure should be built in West Rarita due ot its lower GDP-per-capita. We also suggest targeted marketing towards affluent provinces that will likely have higher consumer demand for football merchandise. Finally, we propose the creation of a Rarita Fantasy Team League as these individuals tend to attend more games, consume more content and spend more merchandise.
 -   To evaluate player performance, we suggest using position-specific metrics which are supported by our GBM player-rating model and external research. We also have established a framework for annual monitoring of our team's competitiveness.
 
-For additional information regarding our implementation plan, please refer to ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
+For additional information regarding our implementation plan, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
 # 6.Risk and Risk Mitigation Considerations
 
-The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
-=======
-# Risk and Risk Mitigation Considerations
-The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report Submission.pdf).
+The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
+
 
 ![](Markdown_Figures/Heat_Map.png)
 

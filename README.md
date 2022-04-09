@@ -22,10 +22,8 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
     -   [NPV and Sensitivity Analysis](#npv-and-sensitivity-analysis)
     -   [Reserve and Investment
         Strategy](#reserve-and-investment-strategy)
-    -   [](#)
+    -   [Broader Economic Impact](#broader-economic-impact)
 -   [Implementation Plan](#implementation-plan)
--   [Risk and Risk Mitigation
-    Considerations](#risk-and-risk-mitigation-considerations)
 -   [Risk and Risk Mitigation
     Considerations](#risk-and-risk-mitigation-considerations)
     -   [Financial Risks](#financial-risks)
@@ -332,10 +330,10 @@ the probability that a team wins a matchup. This model:
 2.  Calculates the difference between two competing team’s position
     scores
 3.  Inputs the differences in position scores
-    (![match\_model\_data](data/match_model_data.xlsx)) into a GBM that
+    (![match_model_data](data/match_model_data.xlsx)) into a GBM that
     outputs the probability of winning the matchup
 4.  Repeat the procedure between Rarita and other teams
-    ![match\_model\_data](data/match_model_data_rarita.xlsx).
+    ![match_model_data](data/match_model_data_rarita.xlsx).
 
 This model suggests that the differential in FW team scores is the most
 significant predictor in this GBM, highlighting the necessity of strong
@@ -361,9 +359,11 @@ Below code shows the predicted probability of Rarita winning a matchup.
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
     summarise(Score = mean(Expected_Salary))
+```
 
+    ## `summarise()` ungrouping output (override with `.groups` argument)
 
-
+``` r
 #national.team.stats[1,2]*1/11+ national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + #national.team.stats[4,2]*2/11
 #15151245*1/11+ 19606225*4/11 + 22892307*4/11 + 24088798*2/11
 
@@ -447,7 +447,7 @@ that our team is placed in
 
 1.  top 10 for the majority of the time within 5 years
 2.  wins the championship at least once within 10 years
-3.  win probability each year over the remaining years.
+3.  top 10 over the remaining years
 
 ``` r
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -845,7 +845,8 @@ of ∂995m comfortably covers the initial discounted loss of ∂32.12m.
 
 The following sensitivity analysis allows for an understanding of the
 alternative scenarios and the boundaries for negative NPV. See our full
-report for details ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+report for details
+![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
 ![](Graphs/sensitivity%201.png) ![](Graphs/sensitivity%202.png)
 
@@ -865,11 +866,9 @@ Fund as it provides the project with a diverse and stable exposure to
 domestic equities, international equities, domestic fixed interest and
 international fixed interest securities.
 
-## 
-
 ![](Graphs/investment.png)
 
-Broader Economic Impact
+## Broader Economic Impact
 
 We have identified in our data that there is a positive correlation
 between tournament ranking and the league profits, implying that
@@ -879,7 +878,8 @@ that sport-related employment accounts for an average of 1.5% of total
 employment in some European countries. Hence, we estimate that sporting
 activities are expected to contribute up to 2% of GDP per-capita in East
 Rarita and 0.5% GDP in West Rarita. See our full report for detailed
-explanation ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+explanation
+![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
 ![](Graphs/placement%20correlation.png)
 
@@ -909,18 +909,14 @@ our team.
     monitoring of our team’s competitiveness.
 
 For additional information regarding our implementation plan, please
-refer to ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
+refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
 # 6.Risk and Risk Mitigation Considerations
-
-# The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
-
-# Risk and Risk Mitigation Considerations
 
 The project is subject to various risks impacting the likelihood of
 successful implementation. For additional information regarding risk
 analysis, please refer to
-![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
 ![](Markdown_Figures/Heat_Map.png)
 
