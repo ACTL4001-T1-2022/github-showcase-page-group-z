@@ -907,7 +907,25 @@ The following sensitivity analysis allows for an understanding of the alternativ
 ![](Graphs/sensitivity%201.png)
 ![](Graphs/sensitivity%202.png)
 
+## Reserve and Investment Strategy
 
+To ensure that we have sufficient liquid assets to cover any unexpected costs or reduction in revenue, reserve is established based on our estimates for a pessimistic scenario with 2 strongest revenue and cost drivers, where:
+
+-   Sponsorship revenues are 20% lower than expected, and
+
+-   Player salaries are 20% higher.
+
+The remaining assets will be invested into the Vanguard Balanced Index Fund as it provides the
+project with a diverse and stable exposure to domestic equities, international equities, domestic fixed interest and international fixed interest securities.
+
+## 
+![](Graphs/investment.png)
+
+Broader Economic Impact
+
+We have identified in our data that there is a positive correlation between tournament ranking and the league profits, implying that development in a national football team for Rarita will lead to a positive financial impact for the nation's GDP. Research also suggests that sport-related employment accounts for an average of 1.5% of total employment in some European countries. Hence, we estimate that sporting activities are expected to contribute up to 2% of GDP per-capita in East Rarita and 0.5% GDP in West Rarita. See our full report for detailed explanation ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+
+![](Graphs/placement%20correlation.png)
 
 # 5. Implementation Plan
 
