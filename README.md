@@ -27,17 +27,21 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 # Data Preprocessing
 
 For Data Collection and Preprocessing, we have conducted the following
-steps: 1. Excel files are converted to R via `convert_excel_to_r.R`. The
-file mainly uses `readxl` package to read excel tables of specified
-ranges. 2. Cleaning and preparation pipelines are built in
-`R_files/merge_data.R`. This file treats merges data sets from different
-excel sheets together, manages data inconsistencies, imputes missing or
-negative values, and remove unnecessary columns. 3. Exploratory Data
-Analysis are conducted in `R_files/exploratory.R` as well as a
-preliminary linear regression. Some plots from exploratory analysis are
-generated below. 4. Further preprocessing and filtering were done in
-`Annie's preprocessing.R` and `filter_pipeline_exploratory.R` before
-passing into the modelling steps.
+steps:
+
+1.  Excel files are converted to R via `convert_excel_to_r.R`. The file
+    mainly uses `readxl` package to read excel tables of specified
+    ranges.
+2.  Cleaning and preparation pipelines are built in
+    `R_files/merge_data.R`. This file treats merges data sets from
+    different excel sheets together, manages data inconsistencies,
+    imputes missing or negative values, and remove unnecessary columns.
+3.  Exploratory Data Analysis are conducted in `R_files/exploratory.R`
+    as well as a preliminary linear regression. Some plots from
+    exploratory analysis are generated below.
+4.  Further preprocessing and filtering were done in
+    `Annie's preprocessing.R` and `filter_pipeline_exploratory.R` before
+    passing into the modelling steps.
 
 Below are some examples of exploratory analysis done in the model.
 
@@ -53,24 +57,12 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/Annualized_Salary_League-1.png)
-Forward positions are shown to have higher
-`shots on target per 90 minutes`, as well as various other shooting
-metrics, including `expected goals`, `shots total per 90 minutes`. This
-position are shown to have higher value.
+![](README_files/figure-gfm/Annualized_Salary_League-1.png)<!-- -->
 
-``` r
-require(gridExtra)
-```
-
-    ## Loading required package: gridExtra
-
-    ## 
-    ## Attaching package: 'gridExtra'
-
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     combine
+Forward positions are shown to have higher shooting metrics, such as
+`shots on target per 90 minutes`, `expected goals` and
+`shots total per 90 minutes`. This position may have higher correlation
+with winning.
 
 ``` r
 p1<- ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Standard_SoT/90`)) + 
@@ -90,7 +82,7 @@ p3<-ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes
 grid.arrange(p1,p2,p3,ncol = 1)
 ```
 
-![](README_files/figure-markdown_github/Box%20Plots%20on%20Standard_Sh/90-1.png)
+![](README_files/figure-gfm/Box%20Plots%20on%20Standard_Sh/90-1.png)<!-- -->
 
 Based on the results from Linear Regression, players with low Annualized
 Salary and high Predicted Salary would be the players desirable for the
@@ -128,7 +120,7 @@ plot(DF_RFL$Annualized_Salary,DF_RFL$Predicted_Sal, main= "DF RFL")
 plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 ```
 
-![](README_files/figure-markdown_github/linear_regression_models-1.png)
+![](README_files/figure-gfm/linear_regression_models-1.png)<!-- -->
 
 # Modelling Steps
 
@@ -211,7 +203,7 @@ GK_cv <- gbm.perf(gbmFit.param_GK, method = "cv")
 title(main = "GK")
 ```
 
-![](README_files/figure-markdown_github/CV_plots-1.png)
+![](README_files/figure-gfm/CV_plots-1.png)<!-- -->
 
 ## Player Selection
 
@@ -239,7 +231,7 @@ ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/Standardised_Graphs-1.png)
+![](README_files/figure-gfm/Standardised_Graphs-1.png)<!-- -->
 
 ``` r
 #MF
@@ -258,7 +250,7 @@ ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/Standardised_Graphs-2.png)
+![](README_files/figure-gfm/Standardised_Graphs-2.png)<!-- -->
 
 ``` r
 #DF
@@ -276,7 +268,7 @@ ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/Standardised_Graphs-3.png)
+![](README_files/figure-gfm/Standardised_Graphs-3.png)<!-- -->
 
 ``` r
 #GK
@@ -294,7 +286,7 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/Standardised_Graphs-4.png)
+![](README_files/figure-gfm/Standardised_Graphs-4.png)<!-- -->
 
 Following this criteria led to a player selection for the national team
 as illustrated below:
@@ -310,11 +302,11 @@ the probability that a team wins a matchup. This model:
     salaries over each player position
 2.  Calculates the difference between two competing team’s position
     scores
-3.  Inputs the differences in position scores
-    (![match_model_data](data/match_model_data.xlsx)) into a GBM that
-    outputs the probability of winning the matchup
-4.  Repeat the procedure between Rarita and other teams
-    ![match_model_data](data/match_model_data_rarita.xlsx).
+3.  Inputs the differences in position scores (See
+    ![](data/match_model_data.xlsx)) into a GBM that outputs the
+    probability of winning the matchup
+4.  Repeat the procedure between Rarita and other teams (See
+    ![](data/match_model_data_rarita.xlsx)).
 
 This model suggests that the differential in FW team scores is the most
 significant predictor in this GBM, highlighting the necessity of strong
@@ -334,6 +326,7 @@ summary(gbm_match)
 
 Below code shows the predicted probability of Rarita winning a matchup.
 
+#TODO Clean up national.team.stats??
 ``` r
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
@@ -412,8 +405,8 @@ national.team.matchups
 
 ## FSA Match Simulation
 
-We assumed an elimination match system with 24 teams in the elimination
-stage of the tournament.
+We assumed a tournament match system with 24 teams (including Rarita) at
+the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5
 years and winning the FSA Championships in 10 years, we run 1000
@@ -422,9 +415,11 @@ probability using the code block below. We then repeat this process 1000
 times to generate a distribution of probabilities.
 
 Using a similar simulation technique, we also calculated the probability
-that our team is placed in 1. top 10 for the majority of the time within
-5 years 2. wins the championship at least once within 10 years 3. win
-probability each year over the remaining years.
+that our team is placed in
+
+1.  top 10 for the majority of the time within 5 years
+2.  wins the championship at least once within 10 years
+3.  win probability each year over the remaining years.
 
 ``` r
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -455,10 +450,12 @@ for (i in 1:1000) {
 ```
 
 ``` r
-hist(prob_top10_5yrs)
+hist(prob_top10_5yrs,
+     main = "Histogram of Probability of top 10 at least once in 5 years",
+     xlab = "Probability of top 10 at least once in 5 years")
 ```
 
-![](README_files/figure-markdown_github/simulations_cont-1.png)
+![](README_files/figure-gfm/simulations_cont-1.png)<!-- -->
 
 ``` r
 prob_top10_5yrs.df <- data.frame(probs = prob_top10_5yrs)
@@ -499,10 +496,12 @@ for (i in 1:1000) {
     
     prob_top10_5yrs_majority[i] <- sim_counter/1000
 }
-hist(prob_top10_5yrs_majority)
+hist(prob_top10_5yrs_majority, 
+     main = "Histogram of Probability of top 10 for the majority of time in 5 years",
+     xlab = "Probability of top 10 for the majority of time in 5 years")
 ```
 
-![](README_files/figure-markdown_github/simulations_cont-2.png)
+![](README_files/figure-gfm/simulations_cont-2.png)<!-- -->
 
 ``` r
 set.seed(1)
@@ -528,10 +527,12 @@ for (i in 1:1000) {
     
     prob_win_10yrs[i] <- sim_counter/1000
 }
-hist(prob_win_10yrs)
+hist(prob_win_10yrs,
+     main = "Histogram of Probability of winning at least once in 10 years",
+     xlab = "Probability of winning at least once in 10 years")
 ```
 
-![](README_files/figure-markdown_github/simulations_cont-3.png)
+![](README_files/figure-gfm/simulations_cont-3.png)<!-- -->
 
 ``` r
 #CI of winning prob
@@ -627,7 +628,7 @@ ggplot(prob_top10_5yrs.df)+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
 ```
 
-![](README_files/figure-markdown_github/competitiveness_of_team_plots-1.png)
+![](README_files/figure-gfm/competitiveness_of_team_plots-1.png)<!-- -->
 
 ``` r
 ggplot(prob_win_10yrs.df)+
@@ -637,7 +638,7 @@ ggplot(prob_win_10yrs.df)+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
 ```
 
-![](README_files/figure-markdown_github/competitiveness_of_team_plots-2.png)
+![](README_files/figure-gfm/competitiveness_of_team_plots-2.png)<!-- -->
 
 ``` r
 #Set xend and yend
@@ -657,7 +658,7 @@ ggplot(ten.year.bm)+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
 ```
 
-![](README_files/figure-markdown_github/plots-1.png)
+![](README_files/figure-gfm/plots-1.png)<!-- -->
 
 ``` r
 ggplot(five.year.bm)+
@@ -670,7 +671,7 @@ ggplot(five.year.bm)+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
 ```
 
-![](README_files/figure-markdown_github/plots-2.png)
+![](README_files/figure-gfm/plots-2.png)<!-- -->
 
 ``` r
 #Cost of league (player salaries) - ECON model
@@ -697,7 +698,7 @@ ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/plots-3.png)
+![](README_files/figure-gfm/plots-3.png)<!-- -->
 
 ``` r
 #DF
@@ -715,7 +716,7 @@ ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/plots-4.png)
+![](README_files/figure-gfm/plots-4.png)<!-- -->
 
 ``` r
 #FW
@@ -733,7 +734,7 @@ ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/plots-5.png)
+![](README_files/figure-gfm/plots-5.png)<!-- -->
 
 ``` r
 #GK
@@ -751,7 +752,7 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-markdown_github/plots-6.png)
+![](README_files/figure-gfm/plots-6.png)<!-- -->
 
 ## Limitations of Team Selection
 
@@ -796,14 +797,14 @@ our team.
     monitoring of our team’s competitiveness.
 
 For additional information regarding our implementation plan, please
-refer to ![](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
+refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
 # Risk and Risk Mitigation Considerations
 
 The project is subject to various risks impacting the likelihood of
 successful implementation. For additional information regarding risk
 analysis, please refer to
-![](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
+![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
 ![](Markdown_Figures/Heat_Map.png)
 
@@ -835,7 +836,15 @@ crucial to project success.
 
 # References
 
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-2014MaleskySaigegh" class="csl-entry">
+
 Ingersoll, Keith, Edmund Malesky, and Sebastian Saiegh. 2017.
 “Heterogeneity and Team Performance: Evaluating the Effect of Cultural
 Diversity in the World’s Top Soccer League.” *Journal of Sports
 Analytics* 3 (April): 1–26. <https://doi.org/10.3233/JSA-170052>.
+
+</div>
+
+</div>

@@ -4,7 +4,7 @@ author: "Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao"
 date: "05/04/2022"
 output: 
     md_document:
-        variant: markdown_github
+        variant: gfm
 bibliography: references.bib
     
 ---
@@ -19,6 +19,7 @@ library(ggplot2)
 library(gbm)
 library(pdp)
 library(ggalt)
+require(gridExtra)
 ```
 
 ```{r setup, include = FALSE}
@@ -42,6 +43,7 @@ render_toc("README.Rmd")
 
 # Data Preprocessing
 For Data Collection and Preprocessing, we have conducted the following steps:
+
 1. Excel files are converted to R via `convert_excel_to_r.R`. The file mainly uses `readxl` package to read excel tables of specified ranges.
 2. Cleaning and preparation pipelines are built in `R_files/merge_data.R`. This file treats merges data sets from different excel sheets together, manages data inconsistencies, imputes missing or negative values, and remove unnecessary columns.
 3. Exploratory Data Analysis are conducted in `R_files/exploratory.R` as well as a preliminary linear regression. Some plots from exploratory analysis are generated below.
@@ -59,10 +61,10 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-Forward positions are shown to have higher `shots on target per 90 minutes`, as well as various other shooting metrics, including `expected goals`, `shots total per 90 minutes`. This position are shown to have higher value.
+Forward positions are shown to have higher shooting metrics, such as `shots on target per 90 minutes`, `expected goals` and `shots total per 90 minutes`. This position may have higher correlation with winning.
 
 ```{r Box Plots on Standard_Sh/90}
-require(gridExtra)
+
 p1<- ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Standard_SoT/90`)) + 
     geom_boxplot(outlier.shape = NA) + 
     coord_cartesian(ylim =  c(0, 3)) +
@@ -453,8 +455,8 @@ A team rating model is created to rate team performance and calculate the probab
 
 1. Determines a team’s position score by averaging standardised salaries over each player position
 2. Calculates the difference between two competing team’s position scores
-3. Inputs the differences in position scores (![match_model_data](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
-4. Repeat the procedure between Rarita and other teams ![match_model_data](data/match_model_data_rarita.xlsx).
+3. Inputs the differences in position scores (See ![data/match_model_data.xlsx](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
+4. Repeat the procedure between Rarita and other teams (See ![data/match_model_data_rarita.xlsx](data/match_model_data_rarita.xlsx)).
 
 This model suggests that the differential in FW team scores is the most significant predictor in this GBM,
 highlighting the necessity of strong FW players.
@@ -581,6 +583,8 @@ total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$
 ```
 
 Below code shows the predicted probability of Rarita winning a matchup.
+
+#TODO Clean up national.team.stats??
 ```{r team_scores_cont}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
@@ -607,14 +611,16 @@ national.team.matchups
 ```
 
 ## FSA Match Simulation
-We assumed an elimination match system with 24 teams in the elimination stage of the tournament.
+We assumed a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities. 
 
 Using a similar simulation technique, we also calculated the probability that our team is placed in 
+
 1. top 10 for the majority of the time within 5 years
 2. wins the championship at least once within 10 years
 3. win probability each year over the remaining years.
+
 ```{r simulations, eval = sim_TRUE}
 #Our team vs [18,23],[12,17],[6,11],[1,5]
 
@@ -641,12 +647,13 @@ for (i in 1:1000) {
     
     prob_top10_5yrs[i] <- sim_counter/1000
 }
-
 ```
 
 
 ```{r simulations_cont, eval = sim_TRUE}
-hist(prob_top10_5yrs)
+hist(prob_top10_5yrs,
+     main = "Histogram of Probability of top 10 at least once in 5 years",
+     xlab = "Probability of top 10 at least once in 5 years")
 prob_top10_5yrs.df <- data.frame(probs = prob_top10_5yrs)
 
 #CI of top 10
@@ -676,7 +683,9 @@ for (i in 1:1000) {
     
     prob_top10_5yrs_majority[i] <- sim_counter/1000
 }
-hist(prob_top10_5yrs_majority)
+hist(prob_top10_5yrs_majority, 
+     main = "Histogram of Probability of top 10 for the majority of time in 5 years",
+     xlab = "Probability of top 10 for the majority of time in 5 years")
 
 
 
@@ -703,7 +712,9 @@ for (i in 1:1000) {
     
     prob_win_10yrs[i] <- sim_counter/1000
 }
-hist(prob_win_10yrs)
+hist(prob_win_10yrs,
+     main = "Histogram of Probability of winning at least once in 10 years",
+     xlab = "Probability of winning at least once in 10 years")
 
 #CI of winning prob
 mean(prob_win_10yrs) - qnorm(0.975, 0, 1) * sd(prob_win_10yrs) / sqrt(1000)
@@ -901,12 +912,12 @@ Our implementation consists of three major components: A team set-up, a marketin
 * Our marketing and sponsorship strategy ethically distributes investments across Raritan provinces by applying a utilitarian approach. We propose that to maximise social impact, football infrastructure should be built in West Rarita due ot its lower GDP-per-capita. We also suggest targeted marketing towards affluent provinces that will likely have higher consumer demand for football merchandise. Finally, we propose the creation of a Rarita Fantasy Team League as these individuals tend to attend more games, consume more content and spend more merchandise.
 * To evaluate player performance, we suggest using position-specific metrics which are supported by our GBM player-rating model and external research. We also have established a framework for annual monitoring of our team's competitiveness.
 
-For additional information regarding our implementation plan, please refer to ![](ACTL4001_Group_Z_Case_Report Submission.pdf)
+For additional information regarding our implementation plan, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report Submission.pdf).
 
 
 
 # Risk and Risk Mitigation Considerations
-The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![](ACTL4001_Group_Z_Case_Report Submission.pdf)
+The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report Submission.pdf).
 
 ![](Markdown_Figures/Heat_Map.png)
 
