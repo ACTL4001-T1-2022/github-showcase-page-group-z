@@ -310,23 +310,6 @@ the probability that a team wins a matchup. This model:
     salaries over each player position
 2.  Calculates the difference between two competing team’s position
     scores
-3.  Inputs the differences in position scores (See
-    ![](data/match_model_data.xlsx)) into a GBM that outputs the
-    probability of winning the matchup
-4.  Repeat the procedure between Rarita and other teams (See
-    ![](data/match_model_data_rarita.xlsx)).
-
-This model suggests that the differential in FW team scores is the most
-significant predictor in this GBM, highlighting the necessity of strong
-FW players.
-
-A team rating model is created to rate team performance and calculate
-the probability that a team wins a matchup. This model:
-
-1.  Determines a team’s position score by averaging standardised
-    salaries over each player position
-2.  Calculates the difference between two competing team’s position
-    scores
 3.  Inputs the differences in position scores
     (![match_model_data](data/match_model_data.xlsx)) into a GBM that
     outputs the probability of winning the matchup
@@ -349,89 +332,47 @@ summary(gbm_match)
     ## GK_Score_Dif       GK_Score_Dif  5.306472
     ## Total_Score_Dif Total_Score_Dif  3.963215
 
-Below code shows the predicted probability of Rarita winning a matchup.
-
-\#TODO Clean up national.team.stats??
-
-``` r
-national.team.stats <- national.team %>%
-    group_by(Pos_new) %>%
-    summarise(Score = mean(Expected_Salary))
-```
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
+Using our selected team, we can determine the predicted probabilities of
+Rarita winning their matchups as seen below:
 
 ``` r
-#national.team.stats[1,2]*1/11+ national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + #national.team.stats[4,2]*2/11
-#15151245*1/11+ 19606225*4/11 + 22892307*4/11 + 24088798*2/11
-
-
-#final.national.team <- national.team.stats%>%
-#    add_row(Pos_new = "Total", Score = (national.team.stats[1,2]*1/11 
-#                                        + national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + 
-#                                            national.team.stats[4,2]*2/11))
-
 national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
-
 
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
 
 national.team.matchups <- cbind(national.team.matchups, Probs = national.team.predict)
-national.team.matchups
+national.team.matchups %>% 
+    select(c("Name_A","Name_B","Probs"))
 ```
 
-    ##    Name_A                  Name_B MF_Score_Dif DF_Score_Dif FW_Score_Dif
-    ## 1  Rarita          Sobianitedrucy      9036090      5134090    4265515.7
-    ## 2  Rarita People's Land of Maneau      7986500      5323992    8973034.1
-    ## 3  Rarita                 Nganion      8291748      3172852    -902572.8
-    ## 4  Rarita                    Mico      5234699      3342123    3084931.2
-    ## 5  Rarita                Quewenia      5890680      3274259    6223285.7
-    ## 6  Rarita         Southern Ristan     13619857      4207993   13410333.7
-    ## 7  Rarita                Galamily     11022364      5607254    7749407.2
-    ## 8  Rarita              Bernepamar     10568437      5672076    9522503.1
-    ## 9  Rarita         Giumle Lizeibon      9340757      6957651    5129741.2
-    ## 10 Rarita      Greri Landmoslands     11645892      3067462    2229827.2
-    ## 11 Rarita                  Xikong     11856850      8542964    4600140.8
-    ## 12 Rarita          Manlisgamncent      9171768      5152385    4861533.5
-    ## 13 Rarita                    Esia      8270526      4394691    8665450.1
-    ## 14 Rarita           Byasier Pujan     10475114      3107325   10001380.4
-    ## 15 Rarita                Djipines      7384635      7298331   14175158.6
-    ## 16 Rarita        Leoneku Guidisia     12287314      7294537   12896570.9
-    ## 17 Rarita                  Ledian     14832058      5150127   11954244.2
-    ## 18 Rarita        Eastern Sleboube      3350818      7024186    6116498.2
-    ## 19 Rarita                 New Uwi     14198967      4837871   11666202.1
-    ## 20 Rarita           Ngoque Blicri      5930867      3918112    3841463.3
-    ## 21 Rarita      Nkasland Cronestan      8301481      5415406    5650436.9
-    ## 22 Rarita        Eastern Niasland     10670433      2725766   13734344.5
-    ## 23 Rarita         Varijitri Isles     11947013      1121932    5621823.5
-    ##    GK_Score_Dif Total_Score_Dif     Probs
-    ## 1     2054401.1         6115105 0.5444979
-    ## 2     -809894.9         6398013 0.6417172
-    ## 3     2306215.3         4214498 0.4886620
-    ## 4     2026605.8         3863978 0.5779851
-    ## 5     3755010.4         4805576 0.5976011
-    ## 6     1959861.3         9099267 0.6887418
-    ## 7     1799458.0         7619704 0.5845329
-    ## 8     2389284.7         7854213 0.6416346
-    ## 9     3619256.0         7188397 0.5554569
-    ## 10    2234408.7         5958862 0.5729932
-    ## 11    2670599.2         8497285 0.5524594
-    ## 12    5717873.6         6612505 0.5475640
-    ## 13    3380069.6         6488349 0.6295361
-    ## 14    2650735.2         6998477 0.6887418
-    ## 15    1168125.8         8022755 0.6529175
-    ## 16   -1852496.1         9297096 0.6611288
-    ## 17    4157779.1         9817728 0.6456512
-    ## 18    4396823.1         5284531 0.5518967
-    ## 19     966805.6         9131506 0.6529175
-    ## 20     395409.2         4315841 0.5851385
-    ## 21    1536208.1         6154967 0.5623946
-    ## 22    1265916.2         7483582 0.6887418
-    ## 23    1392224.3         5901059 0.6085993
+    ##    Name_A                  Name_B     Probs
+    ## 1  Rarita          Sobianitedrucy 0.5444979
+    ## 2  Rarita People's Land of Maneau 0.6417172
+    ## 3  Rarita                 Nganion 0.4886620
+    ## 4  Rarita                    Mico 0.5779851
+    ## 5  Rarita                Quewenia 0.5976011
+    ## 6  Rarita         Southern Ristan 0.6887418
+    ## 7  Rarita                Galamily 0.5845329
+    ## 8  Rarita              Bernepamar 0.6416346
+    ## 9  Rarita         Giumle Lizeibon 0.5554569
+    ## 10 Rarita      Greri Landmoslands 0.5729932
+    ## 11 Rarita                  Xikong 0.5524594
+    ## 12 Rarita          Manlisgamncent 0.5475640
+    ## 13 Rarita                    Esia 0.6295361
+    ## 14 Rarita           Byasier Pujan 0.6887418
+    ## 15 Rarita                Djipines 0.6529175
+    ## 16 Rarita        Leoneku Guidisia 0.6611288
+    ## 17 Rarita                  Ledian 0.6456512
+    ## 18 Rarita        Eastern Sleboube 0.5518967
+    ## 19 Rarita                 New Uwi 0.6529175
+    ## 20 Rarita           Ngoque Blicri 0.5851385
+    ## 21 Rarita      Nkasland Cronestan 0.5623946
+    ## 22 Rarita        Eastern Niasland 0.6887418
+    ## 23 Rarita         Varijitri Isles 0.6085993
 
 ## 4.4 FSA Match Simulation
 
-We assumed a tournament match system with 24 teams (including Rarita) at
+We assume a tournament match system with 24 teams (including Rarita) at
 the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5

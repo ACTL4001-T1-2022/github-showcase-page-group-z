@@ -134,25 +134,25 @@ plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 
 Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion [\@2014MaleskySaigegh]. This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
 
--   Salaries of league players are reflective of their skill level.
--   The attributes relevant in determining skill level are position-specific. Thus, player ratings for each position should be modelled individually.
--   Player performance in leagues translates to tournaments.
--   The level of play is consistent across leagues.
+-  Salaries of league players are reflective of their skill level.
+-  The attributes relevant in determining skill level are position-specific. Thus, player ratings for each position should be modelled individually.
+-  Player performance in leagues translates to tournaments.
+-  The level of play is consistent across leagues.
 
 Although player salary is the assumed player rating metric, exploratory analysis shows that salaries in RFL deviate noticeably compared to other leagues despite RFL players delivering similar performances. Thus, the use of a model linking player attributes to a standardised salary figure is necessary.
 
 To develop a predictive model linking player attributes to salaries, the evaluation criteria of validation-set error is used. The non-RFL league player data is split into a 90% training set and 10% test set. Several candidate models are then fitted, and their corresponding validation-set error computed. Note that:
 
--   Model fitting occurred independently for each position (FW, DF, MF, GK).
--   Goalkeepers are modelled only using goalkeeping data. Here, it is assumed that goalkeepers do not require the same level of attacking, passing etc. as other positions, and that goalkeeping specific skills are their most important attributes.
+-  Model fitting occurred independently for each position (FW, DF, MF, GK).
+-  Goalkeepers are modelled only using goalkeeping data. Here, it is assumed that goalkeepers do not require the same level of attacking, passing etc. as other positions, and that goalkeeping specific skills are their most important attributes.
 
 ![](Markdown_Figures/Test_MSE.png)
 
 The selected player-rating model is a gradient boosting model (GBM) trained on the non-RFL player league due to its higher predictive performance (at the cost of less interpretability). The four boosting models utilise the following parameters:
 
--   An interaction depth of 1 resulting in each tree becoming a stump. This leads to a more interpretable additive model.
--   A shrinkage parameter of 0.01 which is sufficiently low for predictive needs.
--   The number of trees is calculated using 10-fold cross-validation error. As a large number of trees will lead to overfitting and a small number of trees will be inflexible, the number of trees that corresponds to the lowest cross-validation error is selected.
+-  An interaction depth of 1 resulting in each tree becoming a stump. This leads to a more interpretable additive model.
+-  A shrinkage parameter of 0.01 which is sufficiently low for predictive needs.
+-  The number of trees is calculated using 10-fold cross-validation error. As a large number of trees will lead to overfitting and a small number of trees will be inflexible, the number of trees that corresponds to the lowest cross-validation error is selected.
 
 ```{r gbm_main, include = FALSE, eval = FALSE}
 
@@ -463,15 +463,6 @@ A team rating model is created to rate team performance and calculate the probab
 
 1.  Determines a team's position score by averaging standardised salaries over each player position
 2.  Calculates the difference between two competing team's position scores
-3.  Inputs the differences in position scores (See ![](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
-4.  Repeat the procedure between Rarita and other teams (See ![](data/match_model_data_rarita.xlsx)).
-
-This model suggests that the differential in FW team scores is the most significant predictor in this GBM, highlighting the necessity of strong FW players.
-
-A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
-
-1.  Determines a team's position score by averaging standardised salaries over each player position
-2.  Calculates the difference between two competing team's position scores
 3.  Inputs the differences in position scores (![match_model_data](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
 4.  Repeat the procedure between Rarita and other teams ![match_model_data](data/match_model_data_rarita.xlsx).
 
@@ -595,38 +586,28 @@ national.team
 total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$DF_Score*4/11 + team_stats$GK_Score*1/11
 ```
 
-Below code shows the predicted probability of Rarita winning a matchup.
+Using our selected team, we can determine the predicted probabilities of Rarita winning their matchups as seen below:
 
-\#TODO Clean up national.team.stats??
-
-```{r team_scores_cont}
+```{r team_scores_cont, include = FALSE}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
     summarise(Score = mean(Expected_Salary))
 
+```
 
-
-#national.team.stats[1,2]*1/11+ national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + #national.team.stats[4,2]*2/11
-#15151245*1/11+ 19606225*4/11 + 22892307*4/11 + 24088798*2/11
-
-
-#final.national.team <- national.team.stats%>%
-#    add_row(Pos_new = "Total", Score = (national.team.stats[1,2]*1/11 
-#                                        + national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + 
-#                                            national.team.stats[4,2]*2/11))
-
+```{r matchups}
 national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
-
 
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
 
 national.team.matchups <- cbind(national.team.matchups, Probs = national.team.predict)
-national.team.matchups
+national.team.matchups %>% 
+    select(c("Name_A","Name_B","Probs"))
 ```
 
 ## FSA Match Simulation
 
-We assumed a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
+We assume a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities.
 
@@ -912,9 +893,9 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
 
 Several limitations were inherent to the modelling process:
 
--   It is assumed that all teams in FSA maintain the same team composition over ten years and that players remain at their skill level (ignoring skill-growth and aging). This is unlikely to be valid in practice.
--   Alternative models such as neural networks and AdaBoost were not considered and may have exhibited higher predictive power.
--   Models are fitted using a validation-set approach, removing the incorporation of potentially valuable information. The resulting model is dependent on which observations are included in the training and validation sets.
+-  It is assumed that all teams in FSA maintain the same team composition over ten years and that players remain at their skill level (ignoring skill-growth and aging). This is unlikely to be valid in practice.
+-  Alternative models such as neural networks and AdaBoost were not considered and may have exhibited higher predictive power.
+-  Models are fitted using a validation-set approach, removing the incorporation of potentially valuable information. The resulting model is dependent on which observations are included in the training and validation sets.
 
 # Economic Impact
 
@@ -955,9 +936,9 @@ The following sensitivity analysis allows for an understanding of the alternativ
 
 To ensure that we have sufficient liquid assets to cover any unexpected costs or reduction in revenue, reserve is established based on our estimates for a pessimistic scenario with 2 strongest revenue and cost drivers, where:
 
--   Sponsorship revenues are 20% lower than expected, and
+-  Sponsorship revenues are 20% lower than expected, and
 
--   Player salaries are 20% higher.
+-  Player salaries are 20% higher.
 
 The remaining assets will be invested into the Vanguard Balanced Index Fund as it provides the project with a diverse and stable exposure to domestic equities, international equities, domestic fixed interest and international fixed interest securities.
 
@@ -974,6 +955,7 @@ We have identified in our data that there is a positive correlation between tour
 ![](Graphs/road_map.png)
 
 Our implementation consists of three major components: A team set-up, a marketing/sponsorship strategy, and a strategy to monitor performance of our team.
+
 
 -   The team set-up proposes the use of wearable technology to personalise training, monitoring and rehabilitation, as well as the introduction of boot camps.
 -   Our marketing and sponsorship strategy ethically distributes investments across Raritan provinces by applying a utilitarian approach. We propose that to maximise social impact, football infrastructure should be built in West Rarita due ot its lower GDP-per-capita. We also suggest targeted marketing towards affluent provinces that will likely have higher consumer demand for football merchandise. Finally, we propose the creation of a Rarita Fantasy Team League as these individuals tend to attend more games, consume more content and spend more merchandise.
