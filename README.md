@@ -30,7 +30,7 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 -   [Conclusion](#conclusion)
 -   [References](#references)
 
-# 1 Background
+# Background
 
 Football is a competitive sport followed by an estimated four billion
 people. Given this success and popularity, it has been able to bring
@@ -47,10 +47,8 @@ viability. It explains the selection of a football team which can:
 
 -   Achieve an FSA top-ten ranking in the next five years with an 85%
     probability
-
 -   Win the FSA championship in the next ten years with a 70%
     probability
-
 -   Maximise NPV and create a positive impact on Rarita’s economy by
     efficiently investing the ∂995m allocation
 
@@ -58,7 +56,7 @@ For further details regarding the SOA Student Research Case Study,
 please refer to [this
 link](https://www.soa.org/research/opportunities/2022-student-research-case-study-challenge/).
 
-# 2 Data Preprocessing
+# Data Preprocessing
 
 For Data Collection and Preprocessing, we have conducted the following
 steps:
@@ -91,7 +89,7 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
 
-![](README_files/figure-gfm/Annualized_Salary_League-1.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/Annualized_Salary_League-1.png"></p><!-- -->
 
 Forward positions are shown to have higher shooting metrics, such as
 `shots on target per 90 minutes`, `expected goals` and
@@ -116,7 +114,7 @@ p3<-ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes
 grid.arrange(p1,p2,p3,ncol = 1)
 ```
 
-![](README_files/figure-gfm/Box%20Plots%20on%20Standard_Sh/90-1.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/Box%20Plots%20on%20Standard_Sh/90-1.png"></p><!-- -->
 
 Based on the results from Linear Regression, players with low Annualized
 Salary and high Predicted Salary would be the players desirable for the
@@ -154,13 +152,15 @@ plot(DF_RFL$Annualized_Salary,DF_RFL$Predicted_Sal, main= "DF RFL")
 plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 ```
 
-![](README_files/figure-gfm/linear_regression_models-1.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/linear_regression_models-1.png"></p><!-- -->
 
-# 3 Modelling Steps
+# Modelling Steps
 
-![](Markdown_Figures/Model_Flowchart.png)
+<p align="center">
+<img src="Markdown_Figures/Model_Flowchart.png">
+</p>
 
-## 3.1 Player Rating Model
+## Player Rating Model
 
 Our team is chosen from a pool of RFL players exclusively to prevent
 language, cultural and political barriers from impeding overall team
@@ -194,7 +194,9 @@ error computed. Note that:
     passing etc. as other positions, and that goalkeeping specific
     skills are their most important attributes.
 
-![](Markdown_Figures/Test_MSE.png)
+<p align="center">
+<img src="Markdown_Figures/Test_MSE.png">
+</p>
 
 The selected player-rating model is a gradient boosting model (GBM)
 trained on the non-RFL player league due to its higher predictive
@@ -237,9 +239,9 @@ GK_cv <- gbm.perf(gbmFit.param_GK, method = "cv")
 title(main = "GK")
 ```
 
-![](README_files/figure-gfm/CV_plots-1.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/CV_plots-1.png"></p><!-- -->
 
-## 3.2 Player Selection
+## Player Selection
 
 Our goal is to enlist the most cost-efficient RFL players for player
 selection that maximise economic impact. These players exhibit the
@@ -310,14 +312,16 @@ plot4 <- ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary
 grid.arrange(plot1,plot2,plot3,plot4,ncol = 2)
 ```
 
-![](README_files/figure-gfm/Standardised_Graphs-1.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/Standardised_Graphs-1.png"></p><!-- -->
 
 Following this criteria led to a player selection for the national team
 as illustrated below:
 
-![](Markdown_Figures/national_team.png)
+<p align="center">
+<img src="Markdown_Figures/national_team.png">
+</p>
 
-## 3.3 Team Rating Model
+## Team Rating Model
 
 A team rating model is created to rate team performance and calculate
 the probability that a team wins a matchup. This model:
@@ -327,10 +331,10 @@ the probability that a team wins a matchup. This model:
 2.  Calculates the difference between two competing team’s position
     scores
 3.  Inputs the differences in position scores
-    (![match_model_data](data/match_model_data.xlsx)) into a GBM that
-    outputs the probability of winning the matchup
+    ([match_model_data.xlsx](data/match_model_data.xlsx)) into a GBM
+    that outputs the probability of winning the matchup
 4.  Repeat the procedure between Rarita and other teams
-    ![match_model_data](data/match_model_data_rarita.xlsx).
+    ([match_model_data_rarita.xlsx](data/match_model_data_rarita.xlsx)).
 
 This model suggests that the differential in FW team scores is the most
 significant predictor in this GBM, highlighting the necessity of strong
@@ -386,7 +390,7 @@ national.team.matchups %>%
     ## 22 Rarita        Eastern Niasland 0.6887418
     ## 23 Rarita         Varijitri Isles 0.6085993
 
-## 3.4 FSA Match Simulation
+## FSA Match Simulation
 
 We assume a tournament match system with 24 teams (including Rarita) at
 the elimination stage of the tournament.
@@ -400,9 +404,8 @@ times to generate a distribution of probabilities.
 Using a similar simulation technique, we also calculated the probability
 that our team is placed in
 
-1.  top 10 for the majority of the time within 5 years
-2.  wins the championship at least once within 10 years
-3.  top 10 over the remaining years
+1.  Top 10 for the majority of the time within 5 years
+2.  Wins the championship at least once within 10 years
 
 ``` r
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -432,7 +435,7 @@ for (i in 1:1000) {
 }
 ```
 
-## 3.5 Competitiveness of team
+## Competitiveness of team
 
 Based on our selected national team, we can see that the national team
 comfortably exceeds the performance constraints. Here, the 95%
@@ -458,9 +461,9 @@ gghist2 <- ggplot(prob_win_10yrs.df)+
 grid.arrange(gghist1,gghist2,ncol = 1)
 ```
 
-![](README_files/figure-gfm/competitiveness_of_team_plots-1.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/competitiveness_of_team_plots-1.png"></p><!-- -->
 
-## 3.6 Limitations of Team Selection
+## Limitations of Team Selection
 
 Several limitations were inherent to the modelling process:
 
@@ -475,16 +478,16 @@ Several limitations were inherent to the modelling process:
     model is dependent on which observations are included in the
     training and validation sets.
 
-# 4 Economic Impact
+# Economic Impact
 
 This section details our projected cost and revenue figures, followed by
 a NPV and sensitivity analysis which critically assesses alternative
 future states. It also outlines our reserve and investment strategies
 and the broader economic impact. For more information, please find
-![Revenue and costs
+[Revenue and costs
 analysis.xlsx](Model_Objects/Revenue%20and%20costs%20analysis.xlsx)
 
-## 4.1 Revenue & Costs
+## Revenue & Costs
 
 Two main sources of revenue for the national team are tournament prize
 money and sponsorship. We have assumed that FSA has a similar prize pool
@@ -496,41 +499,56 @@ depending on tournament outcome. Furthermore, Annual sponsorship revenue
 generated by the top FIFA football team was used as a guide to project
 Rarita’s sponsorship revenue over the next 10 years.
 
-![](Graphs/tournament_prize.png)
-
-![](Graphs/sponsorship_revenue.png)
-
-![](Graphs/sponsorship.png)
-
-![](Graphs/sponsorshop%20percentage.png)
+<p align="center">
+<img width=600 src="Graphs/tournament_prize.png">
+</p>
+<p align="center">
+<img width=600 src="Graphs/sponsorship_revenue.png">
+</p>
+<p align="center">
+<img width=600 src="Graphs/sponsorship.png">
+</p>
+<p align="center">
+<img src="Graphs/sponsorshop%20percentage.png">
+</p>
 
 Instead of directly estimating our costs using the league cost data, we
 have assumed that the tournament has the same operating margin as
 league, and applied this margin to our projected revenue to estimate our
 costs. This is due to the clear distinction between league and
 tournament funding and spending structure. See table below for
-additional assumptioons.
+additional assumptions.
 
-![](Graphs/Cost%20Assumptions.png)
+<p align="center">
+<img src="Graphs/Cost%20Assumptions.png">
+</p>
 
-## 4.2 NPV and Sensitivity Analysis
+## NPV and Sensitivity Analysis
 
 The analysis suggests that this project exhibits a positive NPV of
 ∂3.462m and an IRR of 7.94%. Additionally, Rarita’s government funding
 of ∂995m comfortably covers the initial discounted loss of ∂32.12m.
 
-![](Graphs/NPV%20table.png)
-
-![](Graphs/NPV%20plot.png)
+<p align="center">
+<img src="Graphs/NPV%20table.png">
+</p>
+<p align="center">
+<img width=600 src="Graphs/NPV plot.png">
+</p>
 
 The following sensitivity analysis allows for an understanding of the
 alternative scenarios and the boundaries for negative NPV. See our full
 report for details
-![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+[Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
-![](Graphs/sensitivity%201.png) ![](Graphs/sensitivity%202.png)
+<p align="center">
+<img src="Graphs/sensitivity%201.png">
+</p>
+<p align="center">
+<img src="Graphs/sensitivity%202.png">
+</p>
 
-## 4.3 Reserve and Investment Strategy
+## Reserve and Investment Strategy
 
 To ensure that we have sufficient liquid assets to cover any unexpected
 costs or reduction in revenue, reserve is established based on our
@@ -538,7 +556,6 @@ estimates for a pessimistic scenario with 2 strongest revenue and cost
 drivers, where:
 
 -   Sponsorship revenues are 20% lower than expected, and
-
 -   Player salaries are 20% higher.
 
 The remaining assets will be invested into the Vanguard Balanced Index
@@ -546,9 +563,11 @@ Fund as it provides the project with a diverse and stable exposure to
 domestic equities, international equities, domestic fixed interest and
 international fixed interest securities.
 
-![](Graphs/investment.png)
+<p align="center">
+<img width=600 src="Graphs/reserve.png">
+</p>
 
-## 4.4 Broader Economic Impact
+## Broader Economic Impact
 
 We have identified in our data that there is a positive correlation
 between tournament ranking and the league profits, implying that
@@ -558,37 +577,49 @@ that sport-related employment accounts for an average of 1.5% of total
 employment in some European countries. Hence, we estimate that sporting
 activities are expected to contribute up to 2% of GDP per-capita in East
 Rarita and 0.5% GDP in West Rarita. See our full report for detailed
-explanation
-![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+explanation [Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
-![](Graphs/placement%20correlation.png)
+<p align="center">
+<img width=600 src="Graphs/placement_correlation.png">
+</p>
 
-# 5 Implementation Plan
+# Implementation Plan
 
-![](Graphs/road_map.png)
+<p align="center">
+<img src="Graphs/road_map.png">
+</p>
 
 Our implementation consists of three major components: A team set-up, a
 marketing/sponsorship strategy, and a strategy to monitor performance of
-our team.
+our team. For additional information regarding our implementation plan,
+please refer to
+[Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
 -   The team set-up proposes the use of wearable technology to
     personalise training, monitoring and rehabilitation, as well as the
     introduction of boot camps.
+
 -   Our marketing and sponsorship strategy ethically distributes
     investments across Raritan provinces by applying a utilitarian
     approach. We propose that to maximise social impact, football
-    infrastructure should be built in West Rarita due ot its lower
+    infrastructure should be built in West Rarita due to its lower
     GDP-per-capita. We also suggest targeted marketing towards affluent
     provinces that will likely have higher consumer demand for football
     merchandise. Finally, we propose the creation of a Rarita Fantasy
     Team League as these individuals tend to attend more games, consume
     more content and spend more merchandise.
+
 -   To evaluate player performance, we suggest using position-specific
     metrics which are supported by our GBM player-rating model and
-    external research. We also have established a framework for annual
-    monitoring of our team’s competitiveness. The benchmarks are shown
-    in the simulations of [Competitiveness of
-    Team](#competitiveness-of-team)
+    external research. Several key metrics to track can be supported by
+    the following graph (Herold et al. 2021).
+
+<p align="center">
+<img src="Graphs/keyPerfInd.png">
+</p>
+
+We also have established a framework for annual monitoring of our team’s
+competitiveness. Please see the benchmarks below:
 
 ``` r
 #Set xend and yend
@@ -608,7 +639,7 @@ ggplot(ten.year.bm)+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
 ```
 
-![](README_files/figure-gfm/plots-1.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/plots-1.png"></p><!-- -->
 
 ``` r
 ggplot(five.year.bm)+
@@ -621,40 +652,38 @@ ggplot(five.year.bm)+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
 ```
 
-![](README_files/figure-gfm/plots-2.png)<!-- -->
+<p align="center"><img src="README_files/figure-gfm/plots-2.png"></p><!-- -->
 
-``` r
-#Cost of league (player salaries) - ECON model
-sum(cor_df$Annualized_Salary[(df$League == "RFL") & (df$Year == "2020")]) + sum(gk_df$Annualized_Salary[(gk_df$League == "RFL")])/2
-```
-
-    ## [1] 1163640000
-
-For additional information regarding our implementation plan, please
-refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
-
-# 6 Risk and Risk Mitigation Considerations
+# Risk and Risk Mitigation Considerations
 
 The project is subject to various risks impacting the likelihood of
 successful implementation. For additional information regarding risk
 analysis, please refer to
-![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
+[Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
-![](Markdown_Figures/Heat_Map.png)
+<p align="center">
+<img src="Markdown_Figures/Heat_Map.png">
+</p>
 
-## 6.1 Financial Risks
+## Financial Risks
 
-![](Markdown_Figures/Financial_Risk.png)
+<p align="center">
+<img width=800 src="Markdown_Figures/Financial_Risk.png">
+</p>
 
-## 6.2 Operational Risks
+## Operational Risks
 
-![](Markdown_Figures/Operational_Risk.png)
+<p align="center">
+<img width=800 src="Markdown_Figures/Operational_Risk.png">
+</p>
 
-## 6.3 Other Risks
+## Other Risks
 
-![](Markdown_Figures/Other_Risk.png)
+<p align="center">
+<img width=800 src="Markdown_Figures/Other_Risk.png">
+</p>
 
-# 7 Conclusion
+# Conclusion
 
 Through extensive analysis, it is evident that the proposed national
 team effectively balances the trade-off between competitiveness and
@@ -668,9 +697,19 @@ deliver a positive economic impact to Rarita, regular monitoring of team
 performance and public interest in the Raritan football program will be
 crucial to project success.
 
-# 8 References
+# References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-2021Herold" class="csl-entry">
+
+Herold, Mat, Matthias Kempe, Pascal Bauer, and Tim Meyer. 2021.
+“Attacking Key Performance Indicators in Soccer: Current Practice and
+Perceptions from the Elite to Youth Academy Level.” *Journal of Sports
+Science & Medicine* 20 (March): 158–69.
+<https://doi.org/10.52082/jssm.2021.158>.
+
+</div>
 
 <div id="ref-2014MaleskySaigegh" class="csl-entry">
 

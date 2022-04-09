@@ -10,7 +10,6 @@ date: April 09, 2022
 output: 
     md_document:
         variant: gfm
-        number_sections: TRUE
 bibliography: references.bib
 ---
 
@@ -24,10 +23,11 @@ library(ggplot2)
 library(gbm)
 library(pdp)
 library(ggalt)
+library(htmltools)
 require(gridExtra)
 ```
 
-```{r setup, include = FALSE}
+```{r setup_file, include = FALSE}
 source("R_files/Annie's preprocessing.R")
 source("R_files/filter_pipeline_exploratory.R")
 PLAYER_tourn_res_2020 <- readxl::read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "B11:C27")
@@ -37,6 +37,7 @@ PLAYER_tourn_res_2021 <- readxl::read_excel("data/player-modified.xlsx",sheet = 
 ```{r settings, include = FALSE}
 # Switch this to TRUE if you want to see the results of simulation (~1-2 mins knit time)
 sim_TRUE = T
+wid = 700
 ```
 
 # Table of Contents {-}
@@ -53,9 +54,7 @@ Football is a competitive sport followed by an estimated four billion people. Gi
 The aim of this GitHub showcase is to design a strategy that will balance the trade-off between the team's competitiveness and economic viability. It explains the selection of a football team which can:
 
 -   Achieve an FSA top-ten ranking in the next five years with an 85% probability
-
 -   Win the FSA championship in the next ten years with a 70% probability
-
 -   Maximise NPV and create a positive impact on Rarita's economy by efficiently investing the ∂995m allocation
 
 For further details regarding the SOA Student Research Case Study, please refer to [this link](https://www.soa.org/research/opportunities/2022-student-research-case-study-challenge/).
@@ -73,7 +72,7 @@ Below are some examples of exploratory analysis done in the model.
 
 We can see that the Raritan Football League has a much lower Annualised Salary compared to the other leagues.
 
-```{r Annualized_Salary_League}
+```{r Annualized_Salary_League, imgcenter=TRUE}
 ggplot(PLAYER_league_non_goal_salary, aes(x = League, 
                                           y = Annualized_Salary))+
     geom_boxplot()+
@@ -84,7 +83,7 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
 
 Forward positions are shown to have higher shooting metrics, such as `shots on target per 90 minutes`, `expected goals` and `shots total per 90 minutes`. This position may have higher correlation with winning.
 
-```{r Box Plots on Standard_Sh/90}
+```{r Box Plots on Standard_Sh/90, imgcenter=TRUE}
 
 p1<- ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Standard_SoT/90`)) + 
     geom_boxplot(outlier.shape = NA) + 
@@ -105,7 +104,7 @@ grid.arrange(p1,p2,p3,ncol = 1)
 
 Based on the results from Linear Regression, players with low Annualized Salary and high Predicted Salary would be the players desirable for the Raritan Football Team.
 
-```{r linear_regression_models}
+```{r linear_regression_models, imgcenter=TRUE}
 # LINEAR REGRESSION
 
 cols_to_remove <- c("Pos_new","Player","Nation","League","Squad")
@@ -139,11 +138,11 @@ plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 
 # Modelling Steps
 
-![](Markdown_Figures/Model_Flowchart.png)
+<p align="center"><img src="Markdown_Figures/Model_Flowchart.png"></p>
 
 ## Player Rating Model
 
-Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion [@2014MaleskySaigegh]. This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
+Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion [\@2014MaleskySaigegh]. This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
 
 -   Salaries of league players are reflective of their skill level.
 -   The attributes relevant in determining skill level are position-specific. Thus, player ratings for each position should be modelled individually.
@@ -157,7 +156,7 @@ To develop a predictive model linking player attributes to salaries, the evaluat
 -   Model fitting occurred independently for each position (FW, DF, MF, GK).
 -   Goalkeepers are modelled only using goalkeeping data. Here, it is assumed that goalkeepers do not require the same level of attacking, passing etc. as other positions, and that goalkeeping specific skills are their most important attributes.
 
-![](Markdown_Figures/Test_MSE.png)
+<p align="center"><img src="Markdown_Figures/Test_MSE.png"></p>
 
 The selected player-rating model is a gradient boosting model (GBM) trained on the non-RFL player league due to its higher predictive performance (at the cost of less interpretability). The four boosting models utilise the following parameters:
 
@@ -165,7 +164,7 @@ The selected player-rating model is a gradient boosting model (GBM) trained on t
 -   A shrinkage parameter of 0.01 which is sufficiently low for predictive needs.
 -   The number of trees is calculated using 10-fold cross-validation error. As a large number of trees will lead to overfitting and a small number of trees will be inflexible, the number of trees that corresponds to the lowest cross-validation error is selected.
 
-```{r gbm_main, include = FALSE, eval = FALSE}
+```{r gbm_main, include = FALSE, eval = FALSE, imgcenter=TRUE}
 
 MF_RFL %>% arrange(Diff,descending = T)
 DF_RFL %>% arrange(Diff,descending = T)
@@ -200,7 +199,7 @@ plot(gbm.predict[(df['Nation'] == "Rarita")], df$Annualized_Salary[(df['Nation']
 
 ```
 
-```{r cor_df, include = FALSE}
+```{r cor_df, include = FALSE, imgcenter=TRUE}
 
 #New dataframe with correlated vairables removed + identifiable attributes
 cor_df_merge <- cbind(cor_df,df[,c("Player","Nation","Pos_new","League","Squad")])
@@ -209,7 +208,7 @@ set.seed(1)
 
 ```
 
-```{r player_rating_fitting, eval = FALSE}
+```{r player_rating_fitting, eval = FALSE, imgcenter=TRUE}
 #FW Player Rating Model
 gbmFit.param_FW <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 #MF Player Rating Model
@@ -220,14 +219,14 @@ gbmFit.param_DF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['
 gbmFit.param_GK <- gbm(Annualized_Salary ~., data = gk_df[(gk_df['League'] != "RFL"),-c(16,17,18,19,20)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 ```
 
-```{r FW_Player_Rating, include = FALSE}
+```{r FW_Player_Rating, include = FALSE, imgcenter=TRUE}
 #FW Player Rating Model - Fitting using 10-fold CV error
 gbmFit.param_FW <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 gbmFit.param_FW
 FW_cv <- gbm.perf(gbmFit.param_FW, method = "cv")
 ```
 
-```{r FW_Player_Rating_Min, include = FALSE}
+```{r FW_Player_Rating_Min, include = FALSE, imgcenter=TRUE}
 min_FW <- which.min(gbmFit.param_FW$cv.error)
 min_FW
 
@@ -247,14 +246,14 @@ plot(gbm.predict_FW[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")]
 mean((gbm.predict_FW[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")]-df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "FW")])^2)
 ```
 
-```{r MF_Player_Rating, include = FALSE}
+```{r MF_Player_Rating, include = FALSE, imgcenter=TRUE}
 #MF Player Rating Model - Fitting using 10-fold CV error
 gbmFit.param_MF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 gbmFit.param_MF
 MF_cv <- gbm.perf(gbmFit.param_MF, method = "cv")
 ```
 
-```{r MF_Player_Rating_Min, include = FALSE}
+```{r MF_Player_Rating_Min, include = FALSE, imgcenter=TRUE}
 min_MF <- which.min(gbmFit.param_MF$cv.error)
 min_MF
 gbm.perf(gbmFit.param_MF, method = "cv")
@@ -276,14 +275,14 @@ colnames(cor_df_merge)[c(17,19,20,21,22,23)]
 mean((gbm.predict_MF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF")]-df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "MF")])^2)
 ```
 
-```{r DF_Player_Rating, include = FALSE}
+```{r DF_Player_Rating, include = FALSE, imgcenter=TRUE}
 #DF Player Rating Model - Fitting using 10-fold CV error
 gbmFit.param_DF <- gbm(Annualized_Salary ~., data = cor_df_merge[(cor_df_merge['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF"),-c(19,20,21,22,23)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 gbmFit.param_DF
 DF_cv <- gbm.perf(gbmFit.param_DF, method = "cv")
 ```
 
-```{r DF_Player_Rating_Min, include = FALSE}
+```{r DF_Player_Rating_Min, include = FALSE, imgcenter=TRUE}
 min_DF <- which.min(gbmFit.param_DF$cv.error)
 min_DF
 gbm.perf(gbmFit.param_DF, method = "cv")
@@ -304,14 +303,14 @@ plot(gbm.predict_DF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF")]
 mean((gbm.predict_DF[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF")]-df$Annualized_Salary[(df['League'] != "RFL") & (cor_df_merge['Pos_new'] == "DF")])^2)
 ```
 
-```{r GK_Player_Rating, include = FALSE}
+```{r GK_Player_Rating, include = FALSE, imgcenter=TRUE}
 #GK model
 gbmFit.param_GK <- gbm(Annualized_Salary ~., data = gk_df[(gk_df['League'] != "RFL"),-c(16,17,18,19,20)], distribution = "gaussian", cv.fold = 10, n.trees = 3000, interaction.depth = 1, shrinkage = 0.01)
 gbmFit.param_GK
 GK_cv <- gbm.perf(gbmFit.param_GK, method = "cv")
 ```
 
-```{r GK_Player_Rating_Min, include = FALSE}
+```{r GK_Player_Rating_Min, include = FALSE, imgcenter=TRUE}
 min_GK <- which.min(gbmFit.param_GK$cv.error)
 min_GK
 
@@ -330,7 +329,7 @@ mean((gbm.predict_GK[(gk_df['League'] != "RFL")]-gk_df$Annualized_Salary[(gk_df[
 
 To optimise the number of trees in the GBMs, CV error as a function of number of trees is plotted below. Note that the green and black lines represent test error and training error respectively.
 
-```{r CV_plots, include = TRUE}
+```{r CV_plots, include = TRUE, imgcenter=TRUE}
 par(mfrow = c(2,2))
 FW_cv <- gbm.perf(gbmFit.param_FW, method = "cv")
 title(main = "FW")
@@ -346,7 +345,7 @@ title(main = "GK")
 
 Our goal is to enlist the most cost-efficient RFL players for player selection that maximise economic impact. These players exhibit the highest standardised-to-annualised salary ratios, delivering high performance at low cost. However, player selection is restricted to the top 25% highest-paid players to meet our FSA performance objectives. Without this additional restriction, sufficient competitiveness is not achieved.
 
-```{r Standardised_Graphs, include = TRUE, warning = FALSE}
+```{r Standardised_Graphs, include = TRUE, warning = FALSE, imgcenter=TRUE}
 #FW
 FW_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]))
 FW_select <- FW_plot_data[(gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")] > 4.41),]
@@ -409,9 +408,9 @@ grid.arrange(plot1,plot2,plot3,plot4,ncol = 2)
 
 Following this criteria led to a player selection for the national team as illustrated below:
 
-![](Markdown_Figures/national_team.png)
+<p align="center"><img src="Markdown_Figures/national_team.png"></p>
 
-```{r model_cont, include = FALSE}
+```{r model_cont, include = FALSE, imgcenter=TRUE}
 
 #Actual salary histograms
 hist(df$Annualized_Salary[(df['League'] != "RFL") & (df['Pos_new'] == "DF")], breaks = 20)
@@ -476,12 +475,12 @@ A team rating model is created to rate team performance and calculate the probab
 
 1.  Determines a team's position score by averaging standardised salaries over each player position
 2.  Calculates the difference between two competing team's position scores
-3.  Inputs the differences in position scores (![match_model_data](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
-4.  Repeat the procedure between Rarita and other teams ![match_model_data](data/match_model_data_rarita.xlsx).
+3.  Inputs the differences in position scores ([match_model_data.xlsx](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
+4.  Repeat the procedure between Rarita and other teams ([match_model_data_rarita.xlsx](data/match_model_data_rarita.xlsx)).
 
 This model suggests that the differential in FW team scores is the most significant predictor in this GBM, highlighting the necessity of strong FW players.
 
-```{r simulate_matches, include = FALSE}
+```{r simulate_matches, include = FALSE, imgcenter=TRUE}
 model_data <- read.csv("data/match_model.csv")
 
 model_data$Outcome <-ifelse(model_data$Outcome == 'Win',1,0)
@@ -517,12 +516,12 @@ mean(gbm.match.predict[1:246])
 mean(gbm.match.predict[247:492])
 ```
 
-```{r fw_importance_graph, fig.show='hide'}
+```{r fw_importance_graph, fig.show='hide', imgcenter=TRUE}
 gbm_match <- gbm(Outcome ~., data = model_data[,-c(2,3,4,5)], distribution = "bernoulli", n.trees = min_match_param, interaction.depth = 1, shrinkage = 0.01)
 summary(gbm_match)
 ```
 
-```{r player_selection, include = FALSE}
+```{r player_selection, include = FALSE, imgcenter=TRUE}
 # Raritian players updated table ------------------------------------------
 column.names <- c('Player','Annualized_Salary','Expected_Salary', 'Pos_new', 'Salary_Ratio')
 select.quantile <- 0.75
@@ -589,7 +588,7 @@ national.team <- rbind(national.team, rarita.fw[1:5,])
 national.team
 ```
 
-```{r team_scores, include = FALSE}
+```{r team_scores, include = FALSE, imgcenter=TRUE}
 #PDP graphs
 #par.df.DF <- partial(gbmFit_DF, pred.var = c('Expected_xG'), n.trees = min_DF)
 #par.df.DF <- partial(gbmFit_DF, pred.var = c('xA'), n.trees = min_DF)
@@ -601,14 +600,14 @@ total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$
 
 Using our selected team, we can determine the predicted probabilities of Rarita winning their matchups as seen below:
 
-```{r team_scores_cont, include = FALSE}
+```{r team_scores_cont, include = FALSE, imgcenter=TRUE}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
     summarise(Score = mean(Expected_Salary))
 
 ```
 
-```{r matchups}
+```{r matchups, imgcenter=TRUE}
 national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
 
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
@@ -626,11 +625,10 @@ To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and 
 
 Using a similar simulation technique, we also calculated the probability that our team is placed in
 
-1.  top 10 for the majority of the time within 5 years
-2.  wins the championship at least once within 10 years
-3.  top 10 over the remaining years
+1.  Top 10 for the majority of the time within 5 years
+2.  Wins the championship at least once within 10 years
 
-```{r simulations, eval = sim_TRUE}
+```{r simulations, eval = sim_TRUE, imgcenter=TRUE}
 #Our team vs [18,23],[12,17],[6,11],[1,5]
 
 set.seed(1)
@@ -658,7 +656,7 @@ for (i in 1:1000) {
 }
 ```
 
-```{r simulations_cont, include = FALSE, eval = sim_TRUE}
+```{r simulations_cont, include = FALSE, eval = sim_TRUE, imgcenter=TRUE}
 hist(prob_top10_5yrs,
      main = "Histogram of Probability of top 10 at least once in 5 years",
      xlab = "Probability of top 10 at least once in 5 years")
@@ -794,7 +792,7 @@ five.year.bm <- data.frame(x = seq(2022,2026),
 
 Based on our selected national team, we can see that the national team comfortably exceeds the performance constraints. Here, the 95% confidence interval for the probabilities of attaining an FSA championship top 10 in 5 years and winning the FSA championship in 10 years is (91.540%, 91.647%) and (76.332%, 76.500%) respectively. These are well above the corresponding 85% and 70% thresholds established earlier.
 
-```{r competitiveness_of_team_plots, eval = sim_TRUE}
+```{r competitiveness_of_team_plots, eval = sim_TRUE, imgcenter=TRUE}
 
 gghist1 <- ggplot(prob_top10_5yrs.df)+
     geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
@@ -821,67 +819,73 @@ Several limitations were inherent to the modelling process:
 
 # Economic Impact
 
-This section details our projected cost and revenue figures, followed by a NPV and sensitivity analysis which critically assesses alternative future states. It also outlines our reserve and investment strategies and the broader economic impact. For more information, please find ![Revenue and costs analysis.xlsx](Model_Objects/Revenue and costs analysis.xlsx)
+This section details our projected cost and revenue figures, followed by a NPV and sensitivity analysis which critically assesses alternative future states. It also outlines our reserve and investment strategies and the broader economic impact. For more information, please find [Revenue and costs analysis.xlsx](Model_Objects/Revenue%20and%20costs%20analysis.xlsx)
 
 ## Revenue & Costs
 
 Two main sources of revenue for the national team are tournament prize money and sponsorship. We have assumed that FSA has a similar prize pool composition and sponsorship structure to FIFA world cup and its football teams, and derived the estimated tournament funding for FSA 2022. Rarita's national team is expected to receive around ∂2.618m of fixed annual tournament support, and up to ∂7.531m of variable prize money depending on tournament outcome. Furthermore, Annual sponsorship revenue generated by the top FIFA football team was used as a guide to project Rarita's sponsorship revenue over the next 10 years.
 
 ![](Graphs/tournament_prize.png)
+<p align="center"><img src="Graphs/tournament_prize.png"></p>
 
+<p align="center"><img src="Graphs/sponsorship_revenue.png"></p>
 
-![](Graphs/sponsorship_revenue.png)
+<p align="center"><img src="Graphs/sponsorship.png"></p>
 
+<p align="center"><img src="Graphs/sponsorshop%20percentage.png"></p>
 
-![](Graphs/sponsorship.png)
+Instead of directly estimating our costs using the league cost data, we have assumed that the tournament has the same operating margin as league, and applied this margin to our projected revenue to estimate our costs. This is due to the clear distinction between league and tournament funding and spending structure. See table below for additional assumptions.
 
-![](Graphs/sponsorshop%20percentage.png)
-
-Instead of directly estimating our costs using the league cost data, we have assumed that the tournament has the same operating margin as league, and applied this margin to our projected revenue to estimate our costs. This is due to the clear distinction between league and tournament funding and spending structure. See table below for additional assumptioons.
-
-![](Graphs/Cost%20Assumptions.png)
+<p align="center"><img src="Graphs/Cost%20Assumptions.png"></p>
 
 ## NPV and Sensitivity Analysis
 
 The analysis suggests that this project exhibits a positive NPV of ∂3.462m and an IRR of 7.94%. Additionally, Rarita's government funding of ∂995m comfortably covers the initial discounted loss of ∂32.12m.
 
-![](Graphs/NPV%20table.png)
+<p align="center"><img src="Graphs/NPV%20table.png"></p>
 
-![](Graphs/NPV plot.png)
+<p align="center"><img src="Graphs/NPV plot.png"></p>
 
-The following sensitivity analysis allows for an understanding of the alternative scenarios and the boundaries for negative NPV. See our full report for details ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+The following sensitivity analysis allows for an understanding of the alternative scenarios and the boundaries for negative NPV. See our full report for details [Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
-![](Graphs/sensitivity%201.png) ![](Graphs/sensitivity%202.png)
+<p align="center"><img src="Graphs/sensitivity%201.png"></p>
+
+<p align="center"><img src="Graphs/sensitivity%202.png"></p>
 
 ## Reserve and Investment Strategy
 
 To ensure that we have sufficient liquid assets to cover any unexpected costs or reduction in revenue, reserve is established based on our estimates for a pessimistic scenario with 2 strongest revenue and cost drivers, where:
 
 -   Sponsorship revenues are 20% lower than expected, and
-
 -   Player salaries are 20% higher.
 
 The remaining assets will be invested into the Vanguard Balanced Index Fund as it provides the project with a diverse and stable exposure to domestic equities, international equities, domestic fixed interest and international fixed interest securities.
 
-![](Graphs/investment.png)
+<p align="center"><img src="Graphs/reserve.png"></p>
 
 ## Broader Economic Impact
 
-We have identified in our data that there is a positive correlation between tournament ranking and the league profits, implying that development in a national football team for Rarita will lead to a positive financial impact for the nation's GDP. Research also suggests that sport-related employment accounts for an average of 1.5% of total employment in some European countries. Hence, we estimate that sporting activities are expected to contribute up to 2% of GDP per-capita in East Rarita and 0.5% GDP in West Rarita. See our full report for detailed explanation ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+We have identified in our data that there is a positive correlation between tournament ranking and the league profits, implying that development in a national football team for Rarita will lead to a positive financial impact for the nation's GDP. Research also suggests that sport-related employment accounts for an average of 1.5% of total employment in some European countries. Hence, we estimate that sporting activities are expected to contribute up to 2% of GDP per-capita in East Rarita and 0.5% GDP in West Rarita. See our full report for detailed explanation [Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
-![](Graphs/placement%20correlation.png)
+<p align="center"><img src="Graphs/placement_correlation.png"></p>
 
 # Implementation Plan
 
-![](Graphs/road_map.png)
+<p align="center"><img src="Graphs/road_map.png"></p>
 
-Our implementation consists of three major components: A team set-up, a marketing/sponsorship strategy, and a strategy to monitor performance of our team.
+Our implementation consists of three major components: A team set-up, a marketing/sponsorship strategy, and a strategy to monitor performance of our team. For additional information regarding our implementation plan, please refer to [Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
 -   The team set-up proposes the use of wearable technology to personalise training, monitoring and rehabilitation, as well as the introduction of boot camps.
--   Our marketing and sponsorship strategy ethically distributes investments across Raritan provinces by applying a utilitarian approach. We propose that to maximise social impact, football infrastructure should be built in West Rarita due ot its lower GDP-per-capita. We also suggest targeted marketing towards affluent provinces that will likely have higher consumer demand for football merchandise. Finally, we propose the creation of a Rarita Fantasy Team League as these individuals tend to attend more games, consume more content and spend more merchandise.
--   To evaluate player performance, we suggest using position-specific metrics which are supported by our GBM player-rating model and external research. We also have established a framework for annual monitoring of our team's competitiveness. The benchmarks are shown in the simulations of [Competitiveness of Team](#competitiveness-of-team)
 
-```{r plots, warning = FALSE, eval = sim_TRUE}
+-   Our marketing and sponsorship strategy ethically distributes investments across Raritan provinces by applying a utilitarian approach. We propose that to maximise social impact, football infrastructure should be built in West Rarita due to its lower GDP-per-capita. We also suggest targeted marketing towards affluent provinces that will likely have higher consumer demand for football merchandise. Finally, we propose the creation of a Rarita Fantasy Team League as these individuals tend to attend more games, consume more content and spend more merchandise.
+
+-   To evaluate player performance, we suggest using position-specific metrics which are supported by our GBM player-rating model and external research. Several key metrics to track can be supported by the following graph [\@2021Herold].
+
+<p align="center"><img src="Graphs/keyPerfInd.png"></p>
+
+We also have established a framework for annual monitoring of our team's competitiveness. Please see the benchmarks below:
+
+```{r plots, warning = FALSE, eval = sim_TRUE, imgcenter=TRUE}
 #Set xend and yend
 ten.year.bm$xend <- seq(2023,2032)
 ten.year.bm$yend <- ten.year.bm$y
@@ -908,30 +912,26 @@ ggplot(five.year.bm)+
     theme_bw()+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
     
-#Cost of league (player salaries) - ECON model
-sum(cor_df$Annualized_Salary[(df$League == "RFL") & (df$Year == "2020")]) + sum(gk_df$Annualized_Salary[(gk_df$League == "RFL")])/2
+
 ```
-
-
-For additional information regarding our implementation plan, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
 # Risk and Risk Mitigation Considerations
 
-The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
+The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to [Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
-![](Markdown_Figures/Heat_Map.png)
+<p align="center"><img src="Markdown_Figures/Heat_Map.png"></p>
 
 ## Financial Risks
 
-![](Markdown_Figures/Financial_Risk.png)
+<p align="center"><img src="Markdown_Figures/Financial_Risk.png"></p>
 
 ## Operational Risks
 
-![](Markdown_Figures/Operational_Risk.png)
+<p align="center"><img src="Markdown_Figures/Operational_Risk.png"></p>
 
 ## Other Risks
 
-![](Markdown_Figures/Other_Risk.png)
+<p align="center"><img src="Markdown_Figures/Other_Risk.png"></p>
 
 # Conclusion
 
