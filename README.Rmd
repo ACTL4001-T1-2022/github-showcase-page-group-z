@@ -4,18 +4,14 @@ author: "Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao"
 date: "05/04/2022"
 output: 
     md_document:
-        variant: markdown_github
+        variant: gfm
+bibliography: references.bib
+    
 ---
 
 # Actuarial Theory and Practice A Assignment
 
 By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
-
-1.  Background
-2.  Data Cleaning Steps
-3.  Modelling Steps
-4.  Economic Impact Steps
-5.  Conclusion
 
 ```{r library, include = FALSE}
 library(dplyr)
@@ -23,12 +19,8 @@ library(ggplot2)
 library(gbm)
 library(pdp)
 library(ggalt)
+require(gridExtra)
 ```
-
-For Data Collection, we have conducted the following steps:
-1. Excel files are converted to R via `convert_excel_to_r.R`. The file mainly uses `readxl` package to read excel tables of specified ranges.
-2. Cleaning and preparation pipelines are built in `R_files/merge_data.R`. This file treats merges data sets from different excel sheets together, manages data inconsistencies, imputes missing or negative values, and remove unnecessary columns.
-3. Exploratory Data Analysis are conducted in `R_files/exploratory.R` as well as a preliminary linear regression. Some plots from exploratory analysis are generated below.
 
 ```{r setup, include = FALSE}
 source("R_files/Annie's preprocessing.R")
@@ -36,6 +28,28 @@ source("R_files/filter_pipeline_exploratory.R")
 PLAYER_tourn_res_2020 <- readxl::read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "B11:C27")
 PLAYER_tourn_res_2021 <- readxl::read_excel("data/player-modified.xlsx",sheet = "Tournament Results",range= "E11:F35")
 ```
+
+```{r settings, include = FALSE}
+# Switch this to TRUE if you want to see the results of simulation (~1-2 mins knit time)
+sim_TRUE = T
+```
+
+# Table of Contents
+```{r toc, echo = FALSE}
+source("render_toc.R")
+render_toc("README.Rmd")
+```
+
+
+# Data Preprocessing
+For Data Collection and Preprocessing, we have conducted the following steps:
+
+1. Excel files are converted to R via `convert_excel_to_r.R`. The file mainly uses `readxl` package to read excel tables of specified ranges.
+2. Cleaning and preparation pipelines are built in `R_files/merge_data.R`. This file treats merges data sets from different excel sheets together, manages data inconsistencies, imputes missing or negative values, and remove unnecessary columns.
+3. Exploratory Data Analysis are conducted in `R_files/exploratory.R` as well as a preliminary linear regression. Some plots from exploratory analysis are generated below.
+4. Further preprocessing and filtering were done in `Annie's preprocessing.R` and `filter_pipeline_exploratory.R` before passing into the modelling steps.
+
+Below are some examples of exploratory analysis done in the model.
 
 We can see that the Raritan Football League has a much lower Annualised Salary compared to the other leagues.
 ```{r Annualized_Salary_League}
@@ -46,9 +60,11 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
-Forward positions are shown to have higher `shots on target per 90 minutes`, as well as various other shooting metrics, including `expected goals`, `shots total per 90 minutes`. This position are shown to have higher value.
+
+Forward positions are shown to have higher shooting metrics, such as `shots on target per 90 minutes`, `expected goals` and `shots total per 90 minutes`. This position may have higher correlation with winning.
+
 ```{r Box Plots on Standard_Sh/90}
-require(gridExtra)
+
 p1<- ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Standard_SoT/90`)) + 
     geom_boxplot(outlier.shape = NA) + 
     coord_cartesian(ylim =  c(0, 3)) +
@@ -106,7 +122,7 @@ plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 
 ## Player Rating Model
 
-Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion (Malesky, Saiegh 2014). This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
+Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion [@2014MaleskySaigegh]. This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
 
 * Salaries of league players are reflective of their skill level.
 * The attributes relevant in determining skill level are position-specific. Thus, player ratings for each position should be modelled individually. 
@@ -439,8 +455,8 @@ A team rating model is created to rate team performance and calculate the probab
 
 1. Determines a team’s position score by averaging standardised salaries over each player position
 2. Calculates the difference between two competing team’s position scores
-3. Inputs the differences in position scores (![match_model_data](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
-4. Repeat the procedure between Rarita and other teams ![match_model_data](data/match_model_data_rarita.xlsx).
+3. Inputs the differences in position scores (See ![data/match_model_data.xlsx](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
+4. Repeat the procedure between Rarita and other teams (See ![data/match_model_data_rarita.xlsx](data/match_model_data_rarita.xlsx)).
 
 This model suggests that the differential in FW team scores is the most significant predictor in this GBM,
 highlighting the necessity of strong FW players.
@@ -567,6 +583,8 @@ total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$
 ```
 
 Below code shows the predicted probability of Rarita winning a matchup.
+
+#TODO Clean up national.team.stats??
 ```{r team_scores_cont}
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
@@ -593,9 +611,17 @@ national.team.matchups
 ```
 
 ## FSA Match Simulation
+We assumed a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
+
 To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities. 
 
-```{r simulations}
+Using a similar simulation technique, we also calculated the probability that our team is placed in 
+
+1. top 10 for the majority of the time within 5 years
+2. wins the championship at least once within 10 years
+3. win probability each year over the remaining years.
+
+```{r simulations, eval = sim_TRUE}
 #Our team vs [18,23],[12,17],[6,11],[1,5]
 
 set.seed(1)
@@ -624,8 +650,10 @@ for (i in 1:1000) {
 ```
 
 
-```{r simulations_cont}
-hist(prob_top10_5yrs)
+```{r simulations_cont, eval = sim_TRUE}
+hist(prob_top10_5yrs,
+     main = "Histogram of Probability of top 10 at least once in 5 years",
+     xlab = "Probability of top 10 at least once in 5 years")
 prob_top10_5yrs.df <- data.frame(probs = prob_top10_5yrs)
 
 #CI of top 10
@@ -655,7 +683,9 @@ for (i in 1:1000) {
     
     prob_top10_5yrs_majority[i] <- sim_counter/1000
 }
-hist(prob_top10_5yrs_majority)
+hist(prob_top10_5yrs_majority, 
+     main = "Histogram of Probability of top 10 for the majority of time in 5 years",
+     xlab = "Probability of top 10 for the majority of time in 5 years")
 
 
 
@@ -682,7 +712,9 @@ for (i in 1:1000) {
     
     prob_win_10yrs[i] <- sim_counter/1000
 }
-hist(prob_win_10yrs)
+hist(prob_win_10yrs,
+     main = "Histogram of Probability of winning at least once in 10 years",
+     xlab = "Probability of winning at least once in 10 years")
 
 #CI of winning prob
 mean(prob_win_10yrs) - qnorm(0.975, 0, 1) * sd(prob_win_10yrs) / sqrt(1000)
@@ -750,10 +782,9 @@ five.year.bm <- data.frame(x = seq(2022,2026),
 ```
 
 ## Competitiveness of team
-
 Based on our selected national team, we can see that the national team comfortably exceeds the performance constraints. Here, the 95% confidence interval for the probabilities of attaining an FSA championship top-10 in 5 years and winning the FSA championship in 10 years is (91.540%, 91.647%) and (76.332%, 76.500%) respectively. These are well above the corresponding 85% and 70% thresholds established earlier.
 
-```{r competitiveness_of_team_plots}
+```{r competitiveness_of_team_plots, eval = sim_TRUE}
 
 par(mfrow = c(1,2))
 ggplot(prob_top10_5yrs.df)+
@@ -771,7 +802,7 @@ ggplot(prob_win_10yrs.df)+
 ```
 
 
-```{r plots}
+```{r plots, warning = FALSE, eval = sim_TRUE}
 
 #Set xend and yend
 ten.year.bm$xend <- seq(2023,2032)
@@ -881,12 +912,12 @@ Our implementation consists of three major components: A team set-up, a marketin
 * Our marketing and sponsorship strategy ethically distributes investments across Raritan provinces by applying a utilitarian approach. We propose that to maximise social impact, football infrastructure should be built in West Rarita due ot its lower GDP-per-capita. We also suggest targeted marketing towards affluent provinces that will likely have higher consumer demand for football merchandise. Finally, we propose the creation of a Rarita Fantasy Team League as these individuals tend to attend more games, consume more content and spend more merchandise.
 * To evaluate player performance, we suggest using position-specific metrics which are supported by our GBM player-rating model and external research. We also have established a framework for annual monitoring of our team's competitiveness.
 
-For additional information regarding our implementation plan, please refer to ![](ACTL4001_Group_Z_Case_Report Submission.pdf)
+For additional information regarding our implementation plan, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report Submission.pdf).
 
 
 
 # Risk and Risk Mitigation Considerations
-The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![](ACTL4001_Group_Z_Case_Report Submission.pdf)
+The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report Submission.pdf).
 
 ![](Markdown_Figures/Heat_Map.png)
 
@@ -904,3 +935,5 @@ The project is subject to various risks impacting the likelihood of successful i
 
 # Conclusion
 Through extensive analysis, it is evident that the proposed national team effectively balances the trade-off between competitiveness and economic viability; comfortably exceeding its performance objectives. The project is economically feasible given its positive NPV and effectively considers key risks inhibiting successful implementation. It also considers the nature of Raritan demographics, ensuring marketing strategies and football investments are tailored towards provincial needs and adhere to ethical frameworks. Although the project will likely deliver a positive economic impact to Rarita, regular monitoring of team performance and public interest in the Raritan football program will be crucial to project success.
+
+# References
