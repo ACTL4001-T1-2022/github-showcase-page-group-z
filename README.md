@@ -2,21 +2,25 @@
 
 By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 
-# Table of Contents
+# 1 Table of Contents
 
 -   [Actuarial Theory and Practice A
     Assignment](#actuarial-theory-and-practice-a-assignment)
+-   [Background](#background)
 -   [Data Preprocessing](#data-preprocessing)
 -   [Modelling Steps](#modelling-steps)
     -   [Player Rating Model](#player-rating-model)
     -   [Player Selection](#player-selection)
     -   [Team Rating Model](#team-rating-model)
--   [TODO Clean up
-    national.team.stats??](#todo-clean-up-national.team.stats??)
     -   [FSA Match Simulation](#fsa-match-simulation)
     -   [Competitiveness of team](#competitiveness-of-team)
     -   [Limitations of Team Selection](#limitations-of-team-selection)
 -   [Economic Impact](#economic-impact)
+    -   [Revenue & Costs](#revenue-&-costs)
+    -   [NPV and Sensitivity Analysis](#npv-and-sensitivity-analysis)
+    -   [Reserve and Investment
+        Strategy](#reserve-and-investment-strategy)
+    -   [Broader Economic Impact](#broader-economic-impact)
 -   [Implementation Plan](#implementation-plan)
 -   [Risk and Risk Mitigation
     Considerations](#risk-and-risk-mitigation-considerations)
@@ -26,7 +30,9 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 -   [Conclusion](#conclusion)
 -   [References](#references)
 
-# Data Preprocessing
+# 2 Background
+
+# 3 Data Preprocessing
 
 For Data Collection and Preprocessing, we have conducted the following
 steps:
@@ -124,17 +130,17 @@ plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 
 ![](README_files/figure-gfm/linear_regression_models-1.png)<!-- -->
 
-# Modelling Steps
+# 4 Modelling Steps
 
 ![](Markdown_Figures/Model_Flowchart.png)
 
-## Player Rating Model
+## 4.1 Player Rating Model
 
 Our team is chosen from a pool of RFL players exclusively to prevent
 language, cultural and political barriers from impeding overall team
-cohesion (Ingersoll, Malesky, and Saiegh 2017). This selection consists
-of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The
-modelling of individual player ratings assumes the following:
+cohesion \[@2014MaleskySaigegh\]. This selection consists of 5 forwards,
+7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of
+individual player ratings assumes the following:
 
 -   Salaries of league players are reflective of their skill level.
 -   The attributes relevant in determining skill level are
@@ -207,7 +213,7 @@ title(main = "GK")
 
 ![](README_files/figure-gfm/CV_plots-1.png)<!-- -->
 
-## Player Selection
+## 4.2 Player Selection
 
 Our goal is to enlist the most cost-efficient RFL players for player
 selection that maximise economic impact. These players exhibit the
@@ -295,7 +301,7 @@ as illustrated below:
 
 ![](Markdown_Figures/national_team.png)
 
-## Team Rating Model
+## 4.3 Team Rating Model
 
 A team rating model is created to rate team performance and calculate
 the probability that a team wins a matchup. This model:
@@ -309,6 +315,23 @@ the probability that a team wins a matchup. This model:
     probability of winning the matchup
 4.  Repeat the procedure between Rarita and other teams (See
     ![](data/match_model_data_rarita.xlsx)).
+
+This model suggests that the differential in FW team scores is the most
+significant predictor in this GBM, highlighting the necessity of strong
+FW players.
+
+A team rating model is created to rate team performance and calculate
+the probability that a team wins a matchup. This model:
+
+1.  Determines a team’s position score by averaging standardised
+    salaries over each player position
+2.  Calculates the difference between two competing team’s position
+    scores
+3.  Inputs the differences in position scores
+    (![match_model_data](data/match_model_data.xlsx)) into a GBM that
+    outputs the probability of winning the matchup
+4.  Repeat the procedure between Rarita and other teams
+    ![match_model_data](data/match_model_data_rarita.xlsx).
 
 This model suggests that the differential in FW team scores is the most
 significant predictor in this GBM, highlighting the necessity of strong
@@ -406,7 +429,7 @@ national.team.matchups
     ## 22    1265916.2         7483582 0.6887418
     ## 23    1392224.3         5901059 0.6085993
 
-## FSA Match Simulation
+## 4.4 FSA Match Simulation
 
 We assumed a tournament match system with 24 teams (including Rarita) at
 the elimination stage of the tournament.
@@ -422,7 +445,7 @@ that our team is placed in
 
 1.  top 10 for the majority of the time within 5 years
 2.  wins the championship at least once within 10 years
-3.  win probability each year over the remaining years.
+3.  top 10 over the remaining years
 
 ``` r
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -612,7 +635,7 @@ five.year.bm <- data.frame(x = seq(2022,2026),
                            y = sort(prob_top10_5yrs_benchmark, TRUE))
 ```
 
-## Competitiveness of team
+## 4.5 Competitiveness of team
 
 Based on our selected national team, we can see that the national team
 comfortably exceeds the performance constraints. Here, the 95%
@@ -757,7 +780,7 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
 
 ![](README_files/figure-gfm/plots-6.png)<!-- -->
 
-## Limitations of Team Selection
+## 4.6 Limitations of Team Selection
 
 Several limitations were inherent to the modelling process:
 
@@ -772,11 +795,95 @@ Several limitations were inherent to the modelling process:
     model is dependent on which observations are included in the
     training and validation sets.
 
-# Economic Impact
+# 5 Economic Impact
 
-# Implementation Plan
+This section details our projected cost and revenue figures, followed by
+a NPV and sensitivity analysis which critically assesses alternative
+future states. It also outlines our reserve and investment strategies
+and the broader economic impact.
 
-**TODO: Add Road Map image**
+## 5.1 Revenue & Costs
+
+Two main sources of revenue for the national team are tournament prize
+money and sponsorship. We have assumed that FSA has a similar prize pool
+composition and sponsorship structure to FIFA world cup and its football
+teams, and derived the estimated tournament funding for FSA 2022.
+Rarita’s national team is expected to receive around ∂2.618m of fixed
+annual tournament support, and up to ∂7.531m of variable prize money
+depending on tournament outcome. Furthermore, Annual sponsorship revenue
+generated by the top FIFA football team was used as a guide to project
+Rarita’s sponsorship revenue over the next 10 years.
+
+<img src="Graphs/tournament_prize.png" title="FIFA tournament prize pool reference" width="375"/>
+
+<img src="Graphs/sponsorship_revenue.png" title="Average yearly sponsorship for top FIFA teams" alt="Average yearly sponsorship for top FIFA teams" width="346"/>
+
+<img src="Graphs/sponsorship.png" title="Projected 10 year sponsorship for FSA" alt="Projected 10 year sponsorship for FSA" width="339"/>
+
+![](Graphs/sponsorshop%20percentage.png)
+
+Instead of directly estimating our costs using the league cost data, we
+have assumed that the tournament has the same operating margin as
+league, and applied this margin to our projected revenue to estimate our
+costs. This is due to the clear distinction between league and
+tournament funding and spending structure. See table below for
+additional assumptioons.
+
+![](Graphs/Cost%20Assumptions.png)
+
+## 5.2 NPV and Sensitivity Analysis
+
+The analysis suggests that this project exhibits a positive NPV of
+∂3.462m and an IRR of 7.94%. Additionally, Rarita’s government funding
+of ∂995m comfortably covers the initial discounted loss of ∂32.12m.
+
+![](Graphs/NPV%20table.png)
+
+<img src="Graphs/NPV plot.png" width="386"/>
+
+The following sensitivity analysis allows for an understanding of the
+alternative scenarios and the boundaries for negative NPV. See our full
+report for details
+![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+
+![](Graphs/sensitivity%201.png) ![](Graphs/sensitivity%202.png)
+
+## 5.3 Reserve and Investment Strategy
+
+To ensure that we have sufficient liquid assets to cover any unexpected
+costs or reduction in revenue, reserve is established based on our
+estimates for a pessimistic scenario with 2 strongest revenue and cost
+drivers, where:
+
+-   Sponsorship revenues are 20% lower than expected, and
+
+-   Player salaries are 20% higher.
+
+The remaining assets will be invested into the Vanguard Balanced Index
+Fund as it provides the project with a diverse and stable exposure to
+domestic equities, international equities, domestic fixed interest and
+international fixed interest securities.
+
+![](Graphs/investment.png)
+
+## 5.4 Broader Economic Impact
+
+We have identified in our data that there is a positive correlation
+between tournament ranking and the league profits, implying that
+development in a national football team for Rarita will lead to a
+positive financial impact for the nation’s GDP. Research also suggests
+that sport-related employment accounts for an average of 1.5% of total
+employment in some European countries. Hence, we estimate that sporting
+activities are expected to contribute up to 2% of GDP per-capita in East
+Rarita and 0.5% GDP in West Rarita. See our full report for detailed
+explanation
+![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+
+![](Graphs/placement%20correlation.png)
+
+# 6 Implementation Plan
+
+![](Graphs/road_map.png)
 
 Our implementation consists of three major components: A team set-up, a
 marketing/sponsorship strategy, and a strategy to monitor performance of
@@ -800,30 +907,30 @@ our team.
     monitoring of our team’s competitiveness.
 
 For additional information regarding our implementation plan, please
-refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
-# Risk and Risk Mitigation Considerations
+# 7 6.Risk and Risk Mitigation Considerations
 
 The project is subject to various risks impacting the likelihood of
 successful implementation. For additional information regarding risk
 analysis, please refer to
-![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
+![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
 ![](Markdown_Figures/Heat_Map.png)
 
-## Financial Risks
+## 7.1 Financial Risks
 
 ![](Markdown_Figures/Financial_Risk.png)
 
-## Operational Risks
+## 7.2 Operational Risks
 
 ![](Markdown_Figures/Operational_Risk.png)
 
-## Other Risks
+## 7.3 Other Risks
 
 ![](Markdown_Figures/Other_Risk.png)
 
-# Conclusion
+# 8 Conclusion
 
 Through extensive analysis, it is evident that the proposed national
 team effectively balances the trade-off between competitiveness and
@@ -837,17 +944,4 @@ deliver a positive economic impact to Rarita, regular monitoring of team
 performance and public interest in the Raritan football program will be
 crucial to project success.
 
-# References
-
-<div id="refs" class="references csl-bib-body hanging-indent">
-
-<div id="ref-2014MaleskySaigegh" class="csl-entry">
-
-Ingersoll, Keith, Edmund Malesky, and Sebastian Saiegh. 2017.
-“Heterogeneity and Team Performance: Evaluating the Effect of Cultural
-Diversity in the World’s Top Soccer League.” *Journal of Sports
-Analytics* 3 (April): 1–26. <https://doi.org/10.3233/JSA-170052>.
-
-</div>
-
-</div>
+# 9 References
