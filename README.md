@@ -4,31 +4,31 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 
 # 1 Table of Contents
 
-  - [Actuarial Theory and Practice A
+-   [Actuarial Theory and Practice A
     Assignment](#actuarial-theory-and-practice-a-assignment)
-  - [Background](#background)
-  - [Data Preprocessing](#data-preprocessing)
-  - [Modelling Steps](#modelling-steps)
-      - [Player Rating Model](#player-rating-model)
-      - [Player Selection](#player-selection)
-      - [Team Rating Model](#team-rating-model)
-      - [FSA Match Simulation](#fsa-match-simulation)
-      - [Competitiveness of team](#competitiveness-of-team)
-      - [Limitations of Team Selection](#limitations-of-team-selection)
-  - [Economic Impact](#economic-impact)
-      - [Revenue & Costs](#revenue-&-costs)
-      - [NPV and Sensitivity Analysis](#npv-and-sensitivity-analysis)
-      - [Reserve and Investment
+-   [Background](#background)
+-   [Data Preprocessing](#data-preprocessing)
+-   [Modelling Steps](#modelling-steps)
+    -   [Player Rating Model](#player-rating-model)
+    -   [Player Selection](#player-selection)
+    -   [Team Rating Model](#team-rating-model)
+    -   [FSA Match Simulation](#fsa-match-simulation)
+    -   [Competitiveness of team](#competitiveness-of-team)
+    -   [Limitations of Team Selection](#limitations-of-team-selection)
+-   [Economic Impact](#economic-impact)
+    -   [Revenue & Costs](#revenue-&-costs)
+    -   [NPV and Sensitivity Analysis](#npv-and-sensitivity-analysis)
+    -   [Reserve and Investment
         Strategy](#reserve-and-investment-strategy)
-      - [Broader Economic Impact](#broader-economic-impact)
-  - [Implementation Plan](#implementation-plan)
-  - [Risk and Risk Mitigation
+    -   [Broader Economic Impact](#broader-economic-impact)
+-   [Implementation Plan](#implementation-plan)
+-   [Risk and Risk Mitigation
     Considerations](#risk-and-risk-mitigation-considerations)
-      - [Financial Risks](#financial-risks)
-      - [Operational Risks](#operational-risks)
-      - [Other Risks](#other-risks)
-  - [Conclusion](#conclusion)
-  - [References](#references)
+    -   [Financial Risks](#financial-risks)
+    -   [Operational Risks](#operational-risks)
+    -   [Other Risks](#other-risks)
+-   [Conclusion](#conclusion)
+-   [References](#references)
 
 # 2 Background
 
@@ -47,9 +47,9 @@ steps:
 3.  Exploratory Data Analysis are conducted in `R_files/exploratory.R`
     as well as a preliminary linear regression. Some plots from
     exploratory analysis are generated below.
-4.  Further preprocessing and filtering were done in `Annie's
-    preprocessing.R` and `filter_pipeline_exploratory.R` before passing
-    into the modelling steps.
+4.  Further preprocessing and filtering were done in
+    `Annie's preprocessing.R` and `filter_pipeline_exploratory.R` before
+    passing into the modelling steps.
 
 Below are some examples of exploratory analysis done in the model.
 
@@ -68,8 +68,9 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
 ![](README_files/figure-gfm/Annualized_Salary_League-1.png)<!-- -->
 
 Forward positions are shown to have higher shooting metrics, such as
-`shots on target per 90 minutes`, `expected goals` and `shots total
-per 90 minutes`. This position may have higher correlation with winning.
+`shots on target per 90 minutes`, `expected goals` and
+`shots total per 90 minutes`. This position may have higher correlation
+with winning.
 
 ``` r
 p1<- ggplot(data = PLAYER_league_non_goal_salary %>% filter(Pos_new != "GK"), aes(x = Pos_new, y = `Standard_SoT/90`)) + 
@@ -141,12 +142,12 @@ cohesion \[@2014MaleskySaigegh\]. This selection consists of 5 forwards,
 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of
 individual player ratings assumes the following:
 
-  - Salaries of league players are reflective of their skill level.
-  - The attributes relevant in determining skill level are
+-   Salaries of league players are reflective of their skill level.
+-   The attributes relevant in determining skill level are
     position-specific. Thus, player ratings for each position should be
     modelled individually.
-  - Player performance in leagues translates to tournaments.
-  - The level of play is consistent across leagues.
+-   Player performance in leagues translates to tournaments.
+-   The level of play is consistent across leagues.
 
 Although player salary is the assumed player rating metric, exploratory
 analysis shows that salaries in RFL deviate noticeably compared to other
@@ -160,9 +161,9 @@ player data is split into a 90% training set and 10% test set. Several
 candidate models are then fitted, and their corresponding validation-set
 error computed. Note that:
 
-  - Model fitting occurred independently for each position (FW, DF, MF,
+-   Model fitting occurred independently for each position (FW, DF, MF,
     GK).
-  - Goalkeepers are modelled only using goalkeeping data. Here, it is
+-   Goalkeepers are modelled only using goalkeeping data. Here, it is
     assumed that goalkeepers do not require the same level of attacking,
     passing etc. as other positions, and that goalkeeping specific
     skills are their most important attributes.
@@ -174,16 +175,14 @@ trained on the non-RFL player league due to its higher predictive
 performance (at the cost of less interpretability). The four boosting
 models utilise the following parameters:
 
-  - An interaction depth of 1 resulting in each tree becoming a stump.
+-   An interaction depth of 1 resulting in each tree becoming a stump.
     This leads to a more interpretable additive model.
-  - A shrinkage parameter of 0.01 which is sufficiently low for
+-   A shrinkage parameter of 0.01 which is sufficiently low for
     predictive needs.
-  - The number of trees is calculated using 10-fold cross-validation
+-   The number of trees is calculated using 10-fold cross-validation
     error. As a large number of trees will lead to overfitting and a
     small number of trees will be inflexible, the number of trees that
     corresponds to the lowest cross-validation error is selected.
-
-<!-- end list -->
 
 ``` r
 #FW Player Rating Model
@@ -312,10 +311,10 @@ the probability that a team wins a matchup. This model:
 2.  Calculates the difference between two competing team’s position
     scores
 3.  Inputs the differences in position scores
-    (![match\_model\_data](data/match_model_data.xlsx)) into a GBM that
+    (![match_model_data](data/match_model_data.xlsx)) into a GBM that
     outputs the probability of winning the matchup
 4.  Repeat the procedure between Rarita and other teams
-    ![match\_model\_data](data/match_model_data_rarita.xlsx).
+    ![match_model_data](data/match_model_data_rarita.xlsx).
 
 This model suggests that the differential in FW team scores is the most
 significant predictor in this GBM, highlighting the necessity of strong
@@ -334,7 +333,7 @@ summary(gbm_match)
     ## Total_Score_Dif Total_Score_Dif  3.963215
 
 Using our selected team, we can determine the predicted probabilities of
-Rarita winning their matchups.
+Rarita winning their matchups as seen below:
 
 ``` r
 national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
@@ -342,37 +341,38 @@ national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
 
 national.team.matchups <- cbind(national.team.matchups, Probs = national.team.predict)
-national.team.matchups[,c(1,2,8)]
+national.team.matchups %>% 
+    select(c("Name_A","Name_B","Probs"))
 ```
 
-    ##    ï..Name_A                  Name_B     Probs
-    ## 1     Rarita          Sobianitedrucy 0.5444979
-    ## 2     Rarita People's Land of Maneau 0.6417172
-    ## 3     Rarita                 Nganion 0.4886620
-    ## 4     Rarita                    Mico 0.5779851
-    ## 5     Rarita                Quewenia 0.5976011
-    ## 6     Rarita         Southern Ristan 0.6887418
-    ## 7     Rarita                Galamily 0.5845329
-    ## 8     Rarita              Bernepamar 0.6416346
-    ## 9     Rarita         Giumle Lizeibon 0.5554569
-    ## 10    Rarita      Greri Landmoslands 0.5729932
-    ## 11    Rarita                  Xikong 0.5524594
-    ## 12    Rarita          Manlisgamncent 0.5475640
-    ## 13    Rarita                    Esia 0.6295361
-    ## 14    Rarita           Byasier Pujan 0.6887418
-    ## 15    Rarita                Djipines 0.6529175
-    ## 16    Rarita        Leoneku Guidisia 0.6611288
-    ## 17    Rarita                  Ledian 0.6456512
-    ## 18    Rarita        Eastern Sleboube 0.5518967
-    ## 19    Rarita                 New Uwi 0.6529175
-    ## 20    Rarita           Ngoque Blicri 0.5851385
-    ## 21    Rarita      Nkasland Cronestan 0.5623946
-    ## 22    Rarita        Eastern Niasland 0.6887418
-    ## 23    Rarita         Varijitri Isles 0.6085993
+    ##    Name_A                  Name_B     Probs
+    ## 1  Rarita          Sobianitedrucy 0.5444979
+    ## 2  Rarita People's Land of Maneau 0.6417172
+    ## 3  Rarita                 Nganion 0.4886620
+    ## 4  Rarita                    Mico 0.5779851
+    ## 5  Rarita                Quewenia 0.5976011
+    ## 6  Rarita         Southern Ristan 0.6887418
+    ## 7  Rarita                Galamily 0.5845329
+    ## 8  Rarita              Bernepamar 0.6416346
+    ## 9  Rarita         Giumle Lizeibon 0.5554569
+    ## 10 Rarita      Greri Landmoslands 0.5729932
+    ## 11 Rarita                  Xikong 0.5524594
+    ## 12 Rarita          Manlisgamncent 0.5475640
+    ## 13 Rarita                    Esia 0.6295361
+    ## 14 Rarita           Byasier Pujan 0.6887418
+    ## 15 Rarita                Djipines 0.6529175
+    ## 16 Rarita        Leoneku Guidisia 0.6611288
+    ## 17 Rarita                  Ledian 0.6456512
+    ## 18 Rarita        Eastern Sleboube 0.5518967
+    ## 19 Rarita                 New Uwi 0.6529175
+    ## 20 Rarita           Ngoque Blicri 0.5851385
+    ## 21 Rarita      Nkasland Cronestan 0.5623946
+    ## 22 Rarita        Eastern Niasland 0.6887418
+    ## 23 Rarita         Varijitri Isles 0.6085993
 
 ## 4.4 FSA Match Simulation
 
-We assumed a tournament match system with 24 teams (including Rarita) at
+We assume a tournament match system with 24 teams (including Rarita) at
 the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5
@@ -387,8 +387,6 @@ that our team is placed in
 1.  top 10 for the majority of the time within 5 years
 2.  wins the championship at least once within 10 years
 3.  top 10 over the remaining years
-
-<!-- end list -->
 
 ``` r
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -727,13 +725,13 @@ ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
 
 Several limitations were inherent to the modelling process:
 
-  - It is assumed that all teams in FSA maintain the same team
+-   It is assumed that all teams in FSA maintain the same team
     composition over ten years and that players remain at their skill
     level (ignoring skill-growth and aging). This is unlikely to be
     valid in practice.
-  - Alternative models such as neural networks and AdaBoost were not
+-   Alternative models such as neural networks and AdaBoost were not
     considered and may have exhibited higher predictive power.
-  - Models are fitted using a validation-set approach, removing the
+-   Models are fitted using a validation-set approach, removing the
     incorporation of potentially valuable information. The resulting
     model is dependent on which observations are included in the
     training and validation sets.
@@ -798,9 +796,9 @@ costs or reduction in revenue, reserve is established based on our
 estimates for a pessimistic scenario with 2 strongest revenue and cost
 drivers, where:
 
-  - Sponsorship revenues are 20% lower than expected, and
+-   Sponsorship revenues are 20% lower than expected, and
 
-  - Player salaries are 20% higher.
+-   Player salaries are 20% higher.
 
 The remaining assets will be invested into the Vanguard Balanced Index
 Fund as it provides the project with a diverse and stable exposure to
@@ -832,10 +830,10 @@ Our implementation consists of three major components: A team set-up, a
 marketing/sponsorship strategy, and a strategy to monitor performance of
 our team.
 
-  - The team set-up proposes the use of wearable technology to
+-   The team set-up proposes the use of wearable technology to
     personalise training, monitoring and rehabilitation, as well as the
     introduction of boot camps.
-  - Our marketing and sponsorship strategy ethically distributes
+-   Our marketing and sponsorship strategy ethically distributes
     investments across Raritan provinces by applying a utilitarian
     approach. We propose that to maximise social impact, football
     infrastructure should be built in West Rarita due ot its lower
@@ -844,7 +842,7 @@ our team.
     merchandise. Finally, we propose the creation of a Rarita Fantasy
     Team League as these individuals tend to attend more games, consume
     more content and spend more merchandise.
-  - To evaluate player performance, we suggest using position-specific
+-   To evaluate player performance, we suggest using position-specific
     metrics which are supported by our GBM player-rating model and
     external research. We also have established a framework for annual
     monitoring of our team’s competitiveness.
