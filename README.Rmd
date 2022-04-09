@@ -1,5 +1,5 @@
 ---
-title: "Actuarial Theory and Practice A Assignment"
+title: "README"
 author: 
 - Aidan Yeoh
 - Alex Zhu
@@ -11,7 +11,6 @@ output:
     md_document:
         variant: gfm
         number_sections: TRUE
-        
 bibliography: references.bib
 ---
 
@@ -40,7 +39,7 @@ PLAYER_tourn_res_2021 <- readxl::read_excel("data/player-modified.xlsx",sheet = 
 sim_TRUE = T
 ```
 
-# Table of Contents
+# Table of Contents {-}
 
 ```{r toc, echo = FALSE}
 source("render_toc.R")
@@ -868,7 +867,7 @@ Our implementation consists of three major components: A team set-up, a marketin
 
 -   The team set-up proposes the use of wearable technology to personalise training, monitoring and rehabilitation, as well as the introduction of boot camps.
 -   Our marketing and sponsorship strategy ethically distributes investments across Raritan provinces by applying a utilitarian approach. We propose that to maximise social impact, football infrastructure should be built in West Rarita due ot its lower GDP-per-capita. We also suggest targeted marketing towards affluent provinces that will likely have higher consumer demand for football merchandise. Finally, we propose the creation of a Rarita Fantasy Team League as these individuals tend to attend more games, consume more content and spend more merchandise.
--   To evaluate player performance, we suggest using position-specific metrics which are supported by our GBM player-rating model and external research. We also have established a framework for annual monitoring of our team's competitiveness. The benchmarks are shown below.
+-   To evaluate player performance, we suggest using position-specific metrics which are supported by our GBM player-rating model and external research. We also have established a framework for annual monitoring of our team's competitiveness. The benchmarks are shown in the simulations of [Competitiveness of Team](#competitiveness-of-team)
 
 ```{r plots, warning = FALSE, eval = sim_TRUE}
 #Set xend and yend
@@ -900,6 +899,7 @@ ggplot(five.year.bm)+
 #Cost of league (player salaries) - ECON model
 sum(cor_df$Annualized_Salary[(df$League == "RFL") & (df$Year == "2020")]) + sum(gk_df$Annualized_Salary[(gk_df$League == "RFL")])/2
 ```
+
 
 For additional information regarding our implementation plan, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
