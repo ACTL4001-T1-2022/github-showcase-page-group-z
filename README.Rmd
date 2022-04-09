@@ -1,18 +1,23 @@
 ---
-title: "Markdown Source"
-author: "Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao"
-date: "05/04/2022"
+title: "Actuarial Theory and Practice A Assignment"
+author: 
+- Aidan Yeoh
+- Alex Zhu
+- Annie Zhu
+- Matthew Winfred
+- Rosie Tao
+date: April 09, 2022
 output: 
     md_document:
         variant: gfm
+        number_sections: TRUE
+        
 bibliography: references.bib
-    
 ---
 
-# Actuarial Theory and Practice A Assignment
+# Actuarial Theory and Practice A Assignment {-}
 
 By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
-
 
 ```{r library, include = FALSE}
 library(dplyr)
@@ -22,7 +27,6 @@ library(pdp)
 library(ggalt)
 require(gridExtra)
 ```
-
 
 ```{r setup, include = FALSE}
 source("R_files/Annie's preprocessing.R")
@@ -37,22 +41,22 @@ sim_TRUE = T
 ```
 
 # Table of Contents
+
 ```{r toc, echo = FALSE}
 source("render_toc.R")
 render_toc("README.Rmd")
 ```
 
+# Background
 
-# 1. Background
+# Data Preprocessing
 
-
-# 2. Data Preprocessing
 For Data Collection and Preprocessing, we have conducted the following steps:
 
-1. Excel files are converted to R via `convert_excel_to_r.R`. The file mainly uses `readxl` package to read excel tables of specified ranges.
-2. Cleaning and preparation pipelines are built in `R_files/merge_data.R`. This file treats merges data sets from different excel sheets together, manages data inconsistencies, imputes missing or negative values, and remove unnecessary columns.
-3. Exploratory Data Analysis are conducted in `R_files/exploratory.R` as well as a preliminary linear regression. Some plots from exploratory analysis are generated below.
-4. Further preprocessing and filtering were done in `Annie's preprocessing.R` and `filter_pipeline_exploratory.R` before passing into the modelling steps.
+1.  Excel files are converted to R via `convert_excel_to_r.R`. The file mainly uses `readxl` package to read excel tables of specified ranges.
+2.  Cleaning and preparation pipelines are built in `R_files/merge_data.R`. This file treats merges data sets from different excel sheets together, manages data inconsistencies, imputes missing or negative values, and remove unnecessary columns.
+3.  Exploratory Data Analysis are conducted in `R_files/exploratory.R` as well as a preliminary linear regression. Some plots from exploratory analysis are generated below.
+4.  Further preprocessing and filtering were done in `Annie's preprocessing.R` and `filter_pipeline_exploratory.R` before passing into the modelling steps.
 
 Below are some examples of exploratory analysis done in the model.
 
@@ -66,7 +70,6 @@ ggplot(PLAYER_league_non_goal_salary, aes(x = League,
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
 ```
-
 
 Forward positions are shown to have higher shooting metrics, such as `shots on target per 90 minutes`, `expected goals` and `shots total per 90 minutes`. This position may have higher correlation with winning.
 
@@ -123,13 +126,13 @@ plot(DF_RFL$Annualized_Salary,DF_RFL$Predicted_Sal, main= "DF RFL")
 plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 ```
 
-# 3. Modelling Steps
+# Modelling Steps
 
 ![](Markdown_Figures/Model_Flowchart.png)
 
 ## Player Rating Model
 
-Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion [@2014MaleskySaigegh]. This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
+Our team is chosen from a pool of RFL players exclusively to prevent language, cultural and political barriers from impeding overall team cohesion [\@2014MaleskySaigegh]. This selection consists of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of individual player ratings assumes the following:
 
 -   Salaries of league players are reflective of their skill level.
 -   The attributes relevant in determining skill level are position-specific. Thus, player ratings for each position should be modelled individually.
@@ -458,13 +461,12 @@ plot(team_stats$`2021 Tournament Place`, team_stats$DF_score)
 
 A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
 
-1. Determines a team’s position score by averaging standardised salaries over each player position
-2. Calculates the difference between two competing team’s position scores
-3. Inputs the differences in position scores (See ![data/match_model_data.xlsx](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
-4. Repeat the procedure between Rarita and other teams (See ![data/match_model_data_rarita.xlsx](data/match_model_data_rarita.xlsx)).
+1.  Determines a team's position score by averaging standardised salaries over each player position
+2.  Calculates the difference between two competing team's position scores
+3.  Inputs the differences in position scores (See ![](data/match_model_data.xlsx)) into a GBM that outputs the probability of winning the matchup
+4.  Repeat the procedure between Rarita and other teams (See ![](data/match_model_data_rarita.xlsx)).
 
-This model suggests that the differential in FW team scores is the most significant predictor in this GBM,
-highlighting the necessity of strong FW players.
+This model suggests that the differential in FW team scores is the most significant predictor in this GBM, highlighting the necessity of strong FW players.
 
 A team rating model is created to rate team performance and calculate the probability that a team wins a matchup. This model:
 
@@ -595,7 +597,7 @@ total_score <- team_stats$FW_Score*2/11 + team_stats$MF_Score*4/11 + team_stats$
 
 Below code shows the predicted probability of Rarita winning a matchup.
 
-#TODO Clean up national.team.stats??
+\#TODO Clean up national.team.stats??
 
 ```{r team_scores_cont}
 national.team.stats <- national.team %>%
@@ -626,14 +628,13 @@ national.team.matchups
 
 We assumed a tournament match system with 24 teams (including Rarita) at the elimination stage of the tournament.
 
-To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities. 
+To calculate probabilties of fulfilling the objectives of Top 10 in 5 years and winning the FSA Championships in 10 years, we run 1000 simulations of tournament bracket outcomes to obtain a single probability using the code block below. We then repeat this process 1000 times to generate a distribution of probabilities.
 
+Using a similar simulation technique, we also calculated the probability that our team is placed in
 
-Using a similar simulation technique, we also calculated the probability that our team is placed in 
-
-1. top 10 for the majority of the time within 5 years
-2. wins the championship at least once within 10 years
-3. top 10 over the remaining years
+1.  top 10 for the majority of the time within 5 years
+2.  wins the championship at least once within 10 years
+3.  top 10 over the remaining years
 
 ```{r simulations, eval = sim_TRUE}
 #Our team vs [18,23],[12,17],[6,11],[1,5]
@@ -662,8 +663,6 @@ for (i in 1:1000) {
     prob_top10_5yrs[i] <- sim_counter/1000
 }
 ```
-
-
 
 ```{r simulations_cont, eval = sim_TRUE}
 hist(prob_top10_5yrs,
@@ -798,6 +797,7 @@ five.year.bm <- data.frame(x = seq(2022,2026),
 ```
 
 ## Competitiveness of team
+
 Based on our selected national team, we can see that the national team comfortably exceeds the performance constraints. Here, the 95% confidence interval for the probabilities of attaining an FSA championship top-10 in 5 years and winning the FSA championship in 10 years is (91.540%, 91.647%) and (76.332%, 76.500%) respectively. These are well above the corresponding 85% and 70% thresholds established earlier.
 
 ```{r competitiveness_of_team_plots, eval = sim_TRUE}
@@ -816,7 +816,6 @@ ggplot(prob_win_10yrs.df)+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
 
 ```
-
 
 ```{r plots, warning = FALSE, eval = sim_TRUE}
 
@@ -917,7 +916,7 @@ Several limitations were inherent to the modelling process:
 -   Alternative models such as neural networks and AdaBoost were not considered and may have exhibited higher predictive power.
 -   Models are fitted using a validation-set approach, removing the incorporation of potentially valuable information. The resulting model is dependent on which observations are included in the training and validation sets.
 
-# 4. Economic Impact
+# Economic Impact
 
 This section details our projected cost and revenue figures, followed by a NPV and sensitivity analysis which critically assesses alternative future states. It also outlines our reserve and investment strategies and the broader economic impact.
 
@@ -947,23 +946,17 @@ The analysis suggests that this project exhibits a positive NPV of ∂3.462m and
 
 The following sensitivity analysis allows for an understanding of the alternative scenarios and the boundaries for negative NPV. See our full report for details ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf).
 
-![](Graphs/sensitivity%201.png)
-![](Graphs/sensitivity%202.png)
+![](Graphs/sensitivity%201.png) ![](Graphs/sensitivity%202.png)
 
 ## Reserve and Investment Strategy
 
-
 To ensure that we have sufficient liquid assets to cover any unexpected costs or reduction in revenue, reserve is established based on our estimates for a pessimistic scenario with 2 strongest revenue and cost drivers, where:
-
 
 -   Sponsorship revenues are 20% lower than expected, and
 
 -   Player salaries are 20% higher.
 
-
-The remaining assets will be invested into the Vanguard Balanced Index Fund as it provides the
-project with a diverse and stable exposure to domestic equities, international equities, domestic fixed interest and international fixed interest securities.
-
+The remaining assets will be invested into the Vanguard Balanced Index Fund as it provides the project with a diverse and stable exposure to domestic equities, international equities, domestic fixed interest and international fixed interest securities.
 
 ![](Graphs/investment.png)
 
@@ -973,7 +966,7 @@ We have identified in our data that there is a positive correlation between tour
 
 ![](Graphs/placement%20correlation.png)
 
-# 5. Implementation Plan
+# Implementation Plan
 
 ![](Graphs/road_map.png)
 
@@ -989,7 +982,6 @@ For additional information regarding our implementation plan, please refer to ![
 
 The project is subject to various risks impacting the likelihood of successful implementation. For additional information regarding risk analysis, please refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
 
-
 ![](Markdown_Figures/Heat_Map.png)
 
 ## Financial Risks
@@ -1004,7 +996,7 @@ The project is subject to various risks impacting the likelihood of successful i
 
 ![](Markdown_Figures/Other_Risk.png)
 
-# 7.Conclusion
+# Conclusion
 
 Through extensive analysis, it is evident that the proposed national team effectively balances the trade-off between competitiveness and economic viability; comfortably exceeding its performance objectives. The project is economically feasible given its positive NPV and effectively considers key risks inhibiting successful implementation. It also considers the nature of Raritan demographics, ensuring marketing strategies and football investments are tailored towards provincial needs and adhere to ethical frameworks. Although the project will likely deliver a positive economic impact to Rarita, regular monitoring of team performance and public interest in the Raritan football program will be crucial to project success.
 
