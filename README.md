@@ -32,6 +32,32 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
 
 # 1 Background
 
+Football is a competitive sport followed by an estimated four billion
+people. Given this success and popularity, it has been able to bring
+significant economic and social impacts by increasing global visibility,
+job opportunities and political influence. The country of Rarita has
+decided to construct a national competitive football team to compete in
+the international Football and Sporting Association (“FSA”) League to
+reap the economic benefits. An initial funding of 995 million Doubloons
+was allocated to construct the team.
+
+The aim of this GitHub showcase is to design a strategy that will
+balance the trade-off between the team’s competitiveness and economic
+viability. It explains the selection of a football team which can:
+
+-   Achieve an FSA top-ten ranking in the next five years with an 85%
+    probability
+
+-   Win the FSA championship in the next ten years with a 70%
+    probability
+
+-   Maximise NPV and create a positive impact on Rarita’s economy by
+    efficiently investing the ∂995m allocation
+
+For further details regarding the SOA Student Research Case Study,
+please refer to [this
+link](https://www.soa.org/research/opportunities/2022-student-research-case-study-challenge/).
+
 # 2 Data Preprocessing
 
 For Data Collection and Preprocessing, we have conducted the following
