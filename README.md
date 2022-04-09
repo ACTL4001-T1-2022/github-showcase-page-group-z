@@ -138,9 +138,9 @@ plot(FW_RFL$Annualized_Salary,FW_RFL$Predicted_Sal, main= "FW RFL")
 
 Our team is chosen from a pool of RFL players exclusively to prevent
 language, cultural and political barriers from impeding overall team
-cohesion \[@2014MaleskySaigegh\]. This selection consists of 5 forwards,
-7 midfielders, 7 defenders, and 3 goalkeepers. The modelling of
-individual player ratings assumes the following:
+cohesion (Ingersoll, Malesky, and Saiegh 2017). This selection consists
+of 5 forwards, 7 midfielders, 7 defenders, and 3 goalkeepers. The
+modelling of individual player ratings assumes the following:
 
 -   Salaries of league players are reflective of their skill level.
 -   The attributes relevant in determining skill level are
@@ -228,73 +228,63 @@ achieved.
 FW_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]))
 FW_select <- FW_plot_data[(gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")] > 4.41),]
 
-ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+plot1 <- ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     geom_point()+
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = FW_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), subtitle = "RFL FW Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-```
 
-![](README_files/figure-gfm/Standardised_Graphs-1.png)<!-- -->
-
-``` r
 #MF
 MF_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_MF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]))
 MF_select <- MF_plot_data[
     (gbm.predict_MF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]>4.4),]
 
-ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+plot2 <- ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     geom_point()+
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = MF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL MF Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), subtitle = "RFL MF Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-```
 
-![](README_files/figure-gfm/Standardised_Graphs-2.png)<!-- -->
-
-``` r
 #DF
 DF_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_DF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")]))
 DF_select <- DF_plot_data[(gbm.predict_DF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")] > 4.35),]
 
-ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+plot3 <- ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     geom_point()+
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = DF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL DF Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), subtitle = "RFL DF Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-```
 
-![](README_files/figure-gfm/Standardised_Graphs-3.png)<!-- -->
-
-``` r
 #GK
 GK_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_GK[(df['League'] == "RFL")], Annualised_Salary = gk_df$Annualized_Salary[(df['League'] == "RFL")]))
 GK_select <- GK_plot_data[(gbm.predict_GK[(df['League'] == "RFL")]/gk_df$Annualized_Salary[(df['League'] == "RFL")] > 1),]
 
-ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
+plot4 <- ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
     geom_point()+
     theme_bw()+
     geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
     geom_encircle(data = GK_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL GK Players")+
+    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), subtitle = "RFL GK Players")+
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
     scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
     scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
+
+grid.arrange(plot1,plot2,plot3,plot4,ncol = 2)
 ```
 
-![](README_files/figure-gfm/Standardised_Graphs-4.png)<!-- -->
+![](README_files/figure-gfm/Standardised_Graphs-1.png)<!-- -->
 
 Following this criteria led to a player selection for the national team
 as illustrated below:
@@ -302,23 +292,6 @@ as illustrated below:
 ![](Markdown_Figures/national_team.png)
 
 ## 4.3 Team Rating Model
-
-A team rating model is created to rate team performance and calculate
-the probability that a team wins a matchup. This model:
-
-1.  Determines a team’s position score by averaging standardised
-    salaries over each player position
-2.  Calculates the difference between two competing team’s position
-    scores
-3.  Inputs the differences in position scores (See
-    ![](data/match_model_data.xlsx)) into a GBM that outputs the
-    probability of winning the matchup
-4.  Repeat the procedure between Rarita and other teams (See
-    ![](data/match_model_data_rarita.xlsx)).
-
-This model suggests that the differential in FW team scores is the most
-significant predictor in this GBM, highlighting the necessity of strong
-FW players.
 
 A team rating model is created to rate team performance and calculate
 the probability that a team wins a matchup. This model:
@@ -349,89 +322,47 @@ summary(gbm_match)
     ## GK_Score_Dif       GK_Score_Dif  5.306472
     ## Total_Score_Dif Total_Score_Dif  3.963215
 
-Below code shows the predicted probability of Rarita winning a matchup.
-
-\#TODO Clean up national.team.stats??
-
-``` r
-national.team.stats <- national.team %>%
-    group_by(Pos_new) %>%
-    summarise(Score = mean(Expected_Salary))
-```
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
+Using our selected team, we can determine the predicted probabilities of
+Rarita winning their matchups as seen below:
 
 ``` r
-#national.team.stats[1,2]*1/11+ national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + #national.team.stats[4,2]*2/11
-#15151245*1/11+ 19606225*4/11 + 22892307*4/11 + 24088798*2/11
-
-
-#final.national.team <- national.team.stats%>%
-#    add_row(Pos_new = "Total", Score = (national.team.stats[1,2]*1/11 
-#                                        + national.team.stats[2,2]*4/11 + national.team.stats[3,2]*4/11 + 
-#                                            national.team.stats[4,2]*2/11))
-
 national.team.matchups <- read.csv("data/match_model_data_rarita.csv")
-
 
 national.team.predict = predict(gbm_match, newdata = national.team.matchups[,-c(1,2)], n.trees = min_match_param, type = "response")
 
 national.team.matchups <- cbind(national.team.matchups, Probs = national.team.predict)
-national.team.matchups
+national.team.matchups %>% 
+    select(c("Name_A","Name_B","Probs"))
 ```
 
-    ##    Name_A                  Name_B MF_Score_Dif DF_Score_Dif FW_Score_Dif
-    ## 1  Rarita          Sobianitedrucy      9036090      5134090    4265515.7
-    ## 2  Rarita People's Land of Maneau      7986500      5323992    8973034.1
-    ## 3  Rarita                 Nganion      8291748      3172852    -902572.8
-    ## 4  Rarita                    Mico      5234699      3342123    3084931.2
-    ## 5  Rarita                Quewenia      5890680      3274259    6223285.7
-    ## 6  Rarita         Southern Ristan     13619857      4207993   13410333.7
-    ## 7  Rarita                Galamily     11022364      5607254    7749407.2
-    ## 8  Rarita              Bernepamar     10568437      5672076    9522503.1
-    ## 9  Rarita         Giumle Lizeibon      9340757      6957651    5129741.2
-    ## 10 Rarita      Greri Landmoslands     11645892      3067462    2229827.2
-    ## 11 Rarita                  Xikong     11856850      8542964    4600140.8
-    ## 12 Rarita          Manlisgamncent      9171768      5152385    4861533.5
-    ## 13 Rarita                    Esia      8270526      4394691    8665450.1
-    ## 14 Rarita           Byasier Pujan     10475114      3107325   10001380.4
-    ## 15 Rarita                Djipines      7384635      7298331   14175158.6
-    ## 16 Rarita        Leoneku Guidisia     12287314      7294537   12896570.9
-    ## 17 Rarita                  Ledian     14832058      5150127   11954244.2
-    ## 18 Rarita        Eastern Sleboube      3350818      7024186    6116498.2
-    ## 19 Rarita                 New Uwi     14198967      4837871   11666202.1
-    ## 20 Rarita           Ngoque Blicri      5930867      3918112    3841463.3
-    ## 21 Rarita      Nkasland Cronestan      8301481      5415406    5650436.9
-    ## 22 Rarita        Eastern Niasland     10670433      2725766   13734344.5
-    ## 23 Rarita         Varijitri Isles     11947013      1121932    5621823.5
-    ##    GK_Score_Dif Total_Score_Dif     Probs
-    ## 1     2054401.1         6115105 0.5444979
-    ## 2     -809894.9         6398013 0.6417172
-    ## 3     2306215.3         4214498 0.4886620
-    ## 4     2026605.8         3863978 0.5779851
-    ## 5     3755010.4         4805576 0.5976011
-    ## 6     1959861.3         9099267 0.6887418
-    ## 7     1799458.0         7619704 0.5845329
-    ## 8     2389284.7         7854213 0.6416346
-    ## 9     3619256.0         7188397 0.5554569
-    ## 10    2234408.7         5958862 0.5729932
-    ## 11    2670599.2         8497285 0.5524594
-    ## 12    5717873.6         6612505 0.5475640
-    ## 13    3380069.6         6488349 0.6295361
-    ## 14    2650735.2         6998477 0.6887418
-    ## 15    1168125.8         8022755 0.6529175
-    ## 16   -1852496.1         9297096 0.6611288
-    ## 17    4157779.1         9817728 0.6456512
-    ## 18    4396823.1         5284531 0.5518967
-    ## 19     966805.6         9131506 0.6529175
-    ## 20     395409.2         4315841 0.5851385
-    ## 21    1536208.1         6154967 0.5623946
-    ## 22    1265916.2         7483582 0.6887418
-    ## 23    1392224.3         5901059 0.6085993
+    ##    Name_A                  Name_B     Probs
+    ## 1  Rarita          Sobianitedrucy 0.5444979
+    ## 2  Rarita People's Land of Maneau 0.6417172
+    ## 3  Rarita                 Nganion 0.4886620
+    ## 4  Rarita                    Mico 0.5779851
+    ## 5  Rarita                Quewenia 0.5976011
+    ## 6  Rarita         Southern Ristan 0.6887418
+    ## 7  Rarita                Galamily 0.5845329
+    ## 8  Rarita              Bernepamar 0.6416346
+    ## 9  Rarita         Giumle Lizeibon 0.5554569
+    ## 10 Rarita      Greri Landmoslands 0.5729932
+    ## 11 Rarita                  Xikong 0.5524594
+    ## 12 Rarita          Manlisgamncent 0.5475640
+    ## 13 Rarita                    Esia 0.6295361
+    ## 14 Rarita           Byasier Pujan 0.6887418
+    ## 15 Rarita                Djipines 0.6529175
+    ## 16 Rarita        Leoneku Guidisia 0.6611288
+    ## 17 Rarita                  Ledian 0.6456512
+    ## 18 Rarita        Eastern Sleboube 0.5518967
+    ## 19 Rarita                 New Uwi 0.6529175
+    ## 20 Rarita           Ngoque Blicri 0.5851385
+    ## 21 Rarita      Nkasland Cronestan 0.5623946
+    ## 22 Rarita        Eastern Niasland 0.6887418
+    ## 23 Rarita         Varijitri Isles 0.6085993
 
 ## 4.4 FSA Match Simulation
 
-We assumed a tournament match system with 24 teams (including Rarita) at
+We assume a tournament match system with 24 teams (including Rarita) at
 the elimination stage of the tournament.
 
 To calculate probabilties of fulfilling the objectives of Top 10 in 5
@@ -480,145 +411,28 @@ for (i in 1:1000) {
 Based on our selected national team, we can see that the national team
 comfortably exceeds the performance constraints. Here, the 95%
 confidence interval for the probabilities of attaining an FSA
-championship top-10 in 5 years and winning the FSA championship in 10
+championship top 10 in 5 years and winning the FSA championship in 10
 years is (91.540%, 91.647%) and (76.332%, 76.500%) respectively. These
 are well above the corresponding 85% and 70% thresholds established
 earlier.
 
 ``` r
-par(mfrow = c(1,2))
-ggplot(prob_top10_5yrs.df)+
+gghist1 <- ggplot(prob_top10_5yrs.df)+
     geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
     labs(x = "Probability of attaining FSA Top 10 in 5 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "FSA Top 10 in 5 years")+
     theme_bw() +
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
-```
 
-![](README_files/figure-gfm/competitiveness_of_team_plots-1.png)<!-- -->
-
-``` r
-ggplot(prob_win_10yrs.df)+
+gghist2 <- ggplot(prob_win_10yrs.df)+
     geom_histogram(aes(x = probs, y = ..density..), color = "black", fill="#5662d1", bins = 30)+
     labs(x = "Probability of winning FSA Championship in 10 years", y = "Density", title = "Distribution of Simulated Probability", subtitle = "Winning FSA Championship in 10 years")+
     theme_bw() +
     theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=16, face = "bold"), plot.subtitle=element_text(size=13))
+
+grid.arrange(gghist1,gghist2,ncol = 1)
 ```
 
-![](README_files/figure-gfm/competitiveness_of_team_plots-2.png)<!-- -->
-
-``` r
-#Set xend and yend
-ten.year.bm$xend <- seq(2023,2032)
-ten.year.bm$yend <- ten.year.bm$y
-
-five.year.bm$xend <- seq(2023,2027)
-five.year.bm$yend <- five.year.bm$y
-
-ggplot(ten.year.bm)+
-    geom_segment(aes(x = x, y = y, xend = xend, yend = yend), color = 'royalblue', cex = 1)+
-    labs(title = "Competitive Benchmark Probabilities", subtitle = 'Probability of Winning FSA over remaining years',
-         x = "Current Year", y = "Probability")+
-    scale_y_continuous(breaks = seq(0,1,0.1), limits = c(0,1))+
-    scale_x_continuous(breaks = seq(2022,2032,1), limits = c(2022,2032))+
-    theme_bw()+
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
-```
-
-![](README_files/figure-gfm/plots-1.png)<!-- -->
-
-``` r
-ggplot(five.year.bm)+
-    geom_segment(aes(x = x, y = y, xend = xend, yend = yend), color = 'royalblue', cex = 1)+
-    labs(title = "Competitive Benchmark Probabilities", subtitle = 'Probability of Placing in the Top 10 over remaining years',
-         x = "Current Year", y = "Probability")+
-    scale_y_continuous(breaks = seq(0,1,0.1), limits = c(0,1))+
-    scale_x_continuous(breaks = seq(2022,2027,1), limits = c(2022,2027))+
-    theme_bw()+
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
-```
-
-![](README_files/figure-gfm/plots-2.png)<!-- -->
-
-``` r
-#Cost of league (player salaries) - ECON model
-sum(cor_df$Annualized_Salary[(df$League == "RFL") & (df$Year == "2020")]) + sum(gk_df$Annualized_Salary[(gk_df$League == "RFL")])/2
-```
-
-    ## [1] 1163640000
-
-``` r
-#Plots for player selection
-#MF
-MF_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_MF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]))
-MF_select <- MF_plot_data[
-    (gbm.predict_MF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "MF")]>4.4),]
-
-ggplot(MF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
-    geom_point()+
-    theme_bw()+
-    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
-    geom_encircle(data = MF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL MF Players")+
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
-    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
-    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-```
-
-![](README_files/figure-gfm/plots-3.png)<!-- -->
-
-``` r
-#DF
-DF_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_DF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")]))
-DF_select <- DF_plot_data[(gbm.predict_DF[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "DF")] > 4.35),]
-
-ggplot(DF_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
-    geom_point()+
-    theme_bw()+
-    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
-    geom_encircle(data = DF_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL DF Players")+
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
-    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
-    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-```
-
-![](README_files/figure-gfm/plots-4.png)<!-- -->
-
-``` r
-#FW
-FW_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")], Annualised_Salary = df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]))
-FW_select <- FW_plot_data[(gbm.predict_FW[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")]/df$Annualized_Salary[(df['League'] == "RFL") & (cor_df_merge['Pos_new'] == "FW")] > 4.41),]
-
-ggplot(FW_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
-    geom_point()+
-    theme_bw()+
-    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
-    geom_encircle(data = FW_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL FW Players")+
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
-    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
-    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-```
-
-![](README_files/figure-gfm/plots-5.png)<!-- -->
-
-``` r
-#GK
-GK_plot_data <- data.frame(cbind(Standardised_Salary = gbm.predict_GK[(df['League'] == "RFL")], Annualised_Salary = gk_df$Annualized_Salary[(df['League'] == "RFL")]))
-GK_select <- GK_plot_data[(gbm.predict_GK[(df['League'] == "RFL")]/gk_df$Annualized_Salary[(df['League'] == "RFL")] > 1),]
-
-ggplot(GK_plot_data, aes(x = Annualised_Salary, y = Standardised_Salary)) +
-    geom_point()+
-    theme_bw()+
-    geom_smooth(method=lm, se = FALSE, formula=y~x-1)+
-    geom_encircle(data = GK_select, color = "red", size = 2, expand = 0.03)+
-    labs(x = expression(paste("Annualised Salary (",partialdiff,")")), y = expression(paste("Standardised Salary (",partialdiff,")")), title = "Relationship between Standardised and Annualised Salary", subtitle = "RFL GK Players")+
-    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))+
-    scale_y_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))+
-    scale_x_continuous(labels = scales::unit_format(unit = "M", scale = 1e-6))
-```
-
-![](README_files/figure-gfm/plots-6.png)<!-- -->
+![](README_files/figure-gfm/competitiveness_of_team_plots-1.png)<!-- -->
 
 ## 4.6 Limitations of Team Selection
 
@@ -747,8 +561,47 @@ our team.
     metrics which are supported by our GBM player-rating model and
     external research. We also have established a framework for annual
     monitoring of our team’s competitiveness. The benchmarks are shown
-    in the simulations of [Competitiveness of
-    Team](#competitiveness-of-team)
+    below.
+
+``` r
+#Set xend and yend
+ten.year.bm$xend <- seq(2023,2032)
+ten.year.bm$yend <- ten.year.bm$y
+
+five.year.bm$xend <- seq(2023,2027)
+five.year.bm$yend <- five.year.bm$y
+
+ggplot(ten.year.bm)+
+    geom_segment(aes(x = x, y = y, xend = xend, yend = yend), color = 'royalblue', cex = 1)+
+    labs(title = "Competitive Benchmark Probabilities", subtitle = 'Probability of Winning FSA over remaining years',
+         x = "Current Year", y = "Probability")+
+    scale_y_continuous(breaks = seq(0,1,0.1), limits = c(0,1))+
+    scale_x_continuous(breaks = seq(2022,2032,1), limits = c(2022,2032))+
+    theme_bw()+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
+```
+
+![](README_files/figure-gfm/plots-1.png)<!-- -->
+
+``` r
+ggplot(five.year.bm)+
+    geom_segment(aes(x = x, y = y, xend = xend, yend = yend), color = 'royalblue', cex = 1)+
+    labs(title = "Competitive Benchmark Probabilities", subtitle = 'Probability of Placing in the Top 10 over remaining years',
+         x = "Current Year", y = "Probability")+
+    scale_y_continuous(breaks = seq(0,1,0.1), limits = c(0,1))+
+    scale_x_continuous(breaks = seq(2022,2027,1), limits = c(2022,2027))+
+    theme_bw()+
+    theme(axis.text=element_text(size=9.5), axis.title=element_text(size=13, face = "bold"), plot.title = element_text(size=14, face = "bold"))
+```
+
+![](README_files/figure-gfm/plots-2.png)<!-- -->
+
+``` r
+#Cost of league (player salaries) - ECON model
+sum(cor_df$Annualized_Salary[(df$League == "RFL") & (df$Year == "2020")]) + sum(gk_df$Annualized_Salary[(gk_df$League == "RFL")])/2
+```
+
+    ## [1] 1163640000
 
 For additional information regarding our implementation plan, please
 refer to ![Report.pdf](ACTL4001_Group_Z_Case_Report%20Submission.pdf)
@@ -789,3 +642,16 @@ performance and public interest in the Raritan football program will be
 crucial to project success.
 
 # 9 References
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-2014MaleskySaigegh" class="csl-entry">
+
+Ingersoll, Keith, Edmund Malesky, and Sebastian Saiegh. 2017.
+“Heterogeneity and Team Performance: Evaluating the Effect of Cultural
+Diversity in the World’s Top Soccer League.” *Journal of Sports
+Analytics* 3 (April): 1–26. <https://doi.org/10.3233/JSA-170052>.
+
+</div>
+
+</div>
