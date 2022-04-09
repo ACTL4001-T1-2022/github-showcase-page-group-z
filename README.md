@@ -11,6 +11,8 @@ By Aidan Yeoh, Alex Zhu, Annie Zhu, Matthew Winfred, Rosie Tao
     -   [Player Rating Model](#player-rating-model)
     -   [Player Selection](#player-selection)
     -   [Team Rating Model](#team-rating-model)
+-   [TODO Clean up
+    national.team.stats??](#todo-clean-up-national.team.stats??)
     -   [FSA Match Simulation](#fsa-match-simulation)
     -   [Competitiveness of team](#competitiveness-of-team)
     -   [Limitations of Team Selection](#limitations-of-team-selection)
@@ -326,7 +328,8 @@ summary(gbm_match)
 
 Below code shows the predicted probability of Rarita winning a matchup.
 
-#TODO Clean up national.team.stats??
+\#TODO Clean up national.team.stats??
+
 ``` r
 national.team.stats <- national.team %>%
     group_by(Pos_new) %>%
